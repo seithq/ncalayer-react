@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import NCALayer, { MethodName, Response } from './ncalayer'
-import StorageAlias from './components/StorageAlias'
+import Error from './components/Error'
 import Status from './components/Status'
+import StorageAlias from './components/StorageAlias'
+import StoragePath from './components/StoragePath'
 
 const isNone = (s: string): boolean => {
   return s === 'NONE'
@@ -37,7 +39,7 @@ const App: React.FC = () => {
         // tslint:disable-next-line
         console.log('connection error: [code]=' + e.code + ', [reason]=' + e.reason)
       }
-      setReady(true)
+      setReady(false)
     }
 
     return () => {
@@ -84,6 +86,10 @@ const App: React.FC = () => {
     }
   }
 
+  if (!ready) {
+    return <Error />
+  }
+
   return (
     <div className='App'>
       <Status ready={ready} />
@@ -95,11 +101,7 @@ const App: React.FC = () => {
           }
         }}
       />
-      <div className='StoragePath'>
-        <span>Путь хранилища ключа:</span>
-        <br />
-        <input type='text' readOnly value={storagePath} />
-      </div>
+      <StoragePath path={storagePath} />
     </div>
   )
 }
