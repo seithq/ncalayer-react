@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import NCALayer, { MethodName, Response } from './ncalayer'
+import StorageAlias from './components/StorageAlias'
+import Status from './components/Status'
 
 const isNone = (s: string): boolean => {
   return s === 'NONE'
@@ -84,24 +86,15 @@ const App: React.FC = () => {
 
   return (
     <div className='App'>
-      <div className='Status'>Ready: {(ready) ? 'YES' : 'NO'}</div>
-      <div className='StorageAlias'>
-        <span>Тип хранилища ключа:</span>
-        <br />
-        <select onChange={(e) => {
+      <Status ready={ready} />
+      <StorageAlias
+        onChange={(e) => {
           if (!isNone(e.target.value)) {
             setMethod(MethodName.BrowseKeyStore)
             client.BrowseKeyStore(e.target.value, 'P12', '')
           }
-        }}>
-          <option value='NONE'>-- Выберите тип --</option>
-          <option value='PKCS12'>Ваш Компьютер</option>
-          <option value='AKKaztokenStore'>Казтокен</option>
-          <option value='AKKZIDCardStore'>Личное Удостоверение</option>
-          <option value='AKEToken72KStore'>EToken Java 72k</option>
-          <option value='AKJaCartaStore'>AK JaCarta</option>
-        </select>
-      </div>
+        }}
+      />
       <div className='StoragePath'>
         <span>Путь хранилища ключа:</span>
         <br />
