@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import NCALayer, { MethodName, Response } from './ncalayer'
+import NCALayer, { MethodName } from './ncalayer'
+import Response from './response'
 import { isNone, isNullOrEmpty, extractKeyAlias } from './helper'
 import Error from './components/Error'
 import Status from './components/Status'
