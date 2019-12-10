@@ -1,15 +1,16 @@
 import React from 'react'
 
 interface StorageAliasProps {
+  selected: string
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
-const StorageAlias: React.FC<StorageAliasProps> = ({ onChange }) => {
+const StorageAlias: React.FC<StorageAliasProps> = ({ selected, onChange }) => {
   return (
     <div className='StorageAlias'>
       <span>Тип хранилища ключа:</span>
       <br />
-      <select onChange={onChange}>
+      <select onChange={onChange} value={selected}>
         <option value='NONE'>-- Выберите тип --</option>
         <option value='PKCS12'>Ваш Компьютер</option>
         <option value='AKKaztokenStore'>Казтокен</option>
