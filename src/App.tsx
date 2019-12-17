@@ -12,6 +12,8 @@ import KeyList from './components/KeyList'
 import Locale from './components/Locale'
 import NotBefore from './components/NotBefore'
 import NotAfter from './components/NotAfter'
+import SubjectDN from './components/SubjectDN'
+import IssuerDN from './components/IssuerDN'
 
 const App: React.FC = () => {
   // refs
@@ -32,6 +34,8 @@ const App: React.FC = () => {
     lang: 'ru',
     notBefore: '',
     notAfter: '',
+    subjectDN: '',
+    issuerDN: '',
   })
 
   // setup ws
@@ -133,6 +137,38 @@ const App: React.FC = () => {
       }
     }
 
+    const getSubjectDNCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, subjectDN: resp.GetResult() })
+      } else {
+        if (resp.IsWrongPasswordWithAttempts()) {
+          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
+          return
+        }
+        if (resp.IsWrongPassword()) {
+          alert('Неправильный пароль!')
+          return
+        }
+        alert('Ошибка: ' + resp.GetErrorCode())
+      }
+    }
+
+    const getIssuerDNCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, issuerDN: resp.GetResult() })
+      } else {
+        if (resp.IsWrongPasswordWithAttempts()) {
+          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
+          return
+        }
+        if (resp.IsWrongPassword()) {
+          alert('Неправильный пароль!')
+          return
+        }
+        alert('Ошибка: ' + resp.GetErrorCode())
+      }
+    }
+
     ws.current!.onmessage = (e) => {
       if (e.data === '--heartbeat--') {
         return
@@ -158,6 +194,12 @@ const App: React.FC = () => {
             break
           case MethodName.GetNotAfter:
             getNotAfterCallback(resp)
+            break
+          case MethodName.GetSubjectDN:
+            getSubjectDNCallback(resp)
+            break
+          case MethodName.GetIssuerDN:
+            getIssuerDNCallback(resp)
             break
           default:
             // tslint:disable-next-line
@@ -220,12 +262,68 @@ const App: React.FC = () => {
         }}
       />
       <NotBefore value={state.notBefore} onClick={(e) => {
+        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
+          alert('Не выбрано хранилище')
+          return
+        }
+        if (isNullOrEmpty(state.password)) {
+          alert('Введите пароль к хранилищу')
+          return
+        }
+        if (isNullOrEmpty(state.keyAlias)) {
+          alert('Не выбран ключ')
+          return
+        }
         setMethod(MethodName.GetNotBefore)
         client.GetNotBefore(state.alias, state.path, state.keyAlias, state.password)
       }} />
       <NotAfter value={state.notAfter} onClick={(e) => {
+        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
+          alert('Не выбрано хранилище')
+          return
+        }
+        if (isNullOrEmpty(state.password)) {
+          alert('Введите пароль к хранилищу')
+          return
+        }
+        if (isNullOrEmpty(state.keyAlias)) {
+          alert('Не выбран ключ')
+          return
+        }
         setMethod(MethodName.GetNotAfter)
         client.GetNotAfter(state.alias, state.path, state.keyAlias, state.password)
+      }} />
+      <SubjectDN value={state.subjectDN} onClick={(e) => {
+        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
+          alert('Не выбрано хранилище')
+          return
+        }
+        if (isNullOrEmpty(state.password)) {
+          alert('Введите пароль к хранилищу')
+          return
+        }
+        if (isNullOrEmpty(state.keyAlias)) {
+          alert('Не выбран ключ')
+          return
+        }
+        setMethod(MethodName.GetSubjectDN)
+        client.GetSubjectDN(state.alias, state.path, state.keyAlias, state.password)
+      }} />
+      <IssuerDN value={state.issuerDN} onClick={(e) => {
+        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
+          alert('Не выбрано хранилище')
+          return
+        }
+        if (isNullOrEmpty(state.password)) {
+          alert('Введите пароль к хранилищу')
+          return
+        }
+        if (isNullOrEmpty(state.keyAlias)) {
+          alert('Не выбран ключ')
+          return
+        }
+        setMethod(MethodName.GetIssuerDN)
+        client.GetIssuerDN(state.alias, state.path, state.keyAlias, state.password)
       }} />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>

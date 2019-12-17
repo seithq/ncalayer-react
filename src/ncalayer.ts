@@ -5,6 +5,8 @@ export enum MethodName {
   SetLocale = 'setLocale',
   GetNotBefore = 'getNotBefore',
   GetNotAfter = 'getNotAfter',
+  GetSubjectDN = 'getSubjectDN',
+  GetIssuerDN = 'getIssuerDN',
 }
 
 interface Payload {
@@ -54,6 +56,22 @@ export default class NCALayer {
   public GetNotAfter(storageName: string, storagePath: string, keyAlias: string, password: string) {
     const data: Payload = {
       method: MethodName.GetNotAfter,
+      args: [storageName, storagePath, keyAlias, password],
+    }
+    this.send(data)
+  }
+
+  public GetSubjectDN(storageName: string, storagePath: string, keyAlias: string, password: string) {
+    const data: Payload = {
+      method: MethodName.GetSubjectDN,
+      args: [storageName, storagePath, keyAlias, password],
+    }
+    this.send(data)
+  }
+
+  public GetIssuerDN(storageName: string, storagePath: string, keyAlias: string, password: string) {
+    const data: Payload = {
+      method: MethodName.GetIssuerDN,
       args: [storageName, storagePath, keyAlias, password],
     }
     this.send(data)
