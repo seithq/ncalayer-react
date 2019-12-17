@@ -9,7 +9,9 @@ import StoragePath from './components/StoragePath'
 import Password from './components/Password'
 import KeyType from './components/KeyType'
 import KeyList from './components/KeyList'
-
+import Locale from './components/Locale'
+import NotBefore from './components/NotBefore'
+import NotAfter from './components/NotAfter'
 
 const App: React.FC = () => {
   // refs
@@ -27,6 +29,9 @@ const App: React.FC = () => {
     keyType: 'ALL',
     keyAlias: '',
     keys: [''],
+    lang: 'ru',
+    notBefore: '',
+    notAfter: '',
   })
 
   // setup ws
@@ -96,6 +101,38 @@ const App: React.FC = () => {
       }
     }
 
+    const getNotBeforeCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, notBefore: resp.GetResult() })
+      } else {
+        if (resp.IsWrongPasswordWithAttempts()) {
+          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
+          return
+        }
+        if (resp.IsWrongPassword()) {
+          alert('Неправильный пароль!')
+          return
+        }
+        alert('Ошибка: ' + resp.GetErrorCode())
+      }
+    }
+
+    const getNotAfterCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, notAfter: resp.GetResult() })
+      } else {
+        if (resp.IsWrongPasswordWithAttempts()) {
+          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
+          return
+        }
+        if (resp.IsWrongPassword()) {
+          alert('Неправильный пароль!')
+          return
+        }
+        alert('Ошибка: ' + resp.GetErrorCode())
+      }
+    }
+
     ws.current!.onmessage = (e) => {
       if (e.data === '--heartbeat--') {
         return
@@ -115,6 +152,12 @@ const App: React.FC = () => {
             break
           case MethodName.GetKeys:
             getKeysCallback(resp)
+            break
+          case MethodName.GetNotBefore:
+            getNotBeforeCallback(resp)
+            break
+          case MethodName.GetNotAfter:
+            getNotAfterCallback(resp)
             break
           default:
             // tslint:disable-next-line
@@ -166,6 +209,24 @@ const App: React.FC = () => {
           client.GetKeys(state.alias, state.path, state.password, state.keyType)
         }}
       />
+      <Locale
+        selected={state.lang}
+        onChange={(e) => {
+          setState({ ...state, lang: e.target.value })
+        }}
+        onClick={(e) => {
+          setMethod(MethodName.SetLocale)
+          client.SetLocale(state.lang)
+        }}
+      />
+      <NotBefore value={state.notBefore} onClick={(e) => {
+        setMethod(MethodName.GetNotBefore)
+        client.GetNotBefore(state.alias, state.path, state.keyAlias, state.password)
+      }} />
+      <NotAfter value={state.notAfter} onClick={(e) => {
+        setMethod(MethodName.GetNotAfter)
+        client.GetNotAfter(state.alias, state.path, state.keyAlias, state.password)
+      }} />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>
   )
