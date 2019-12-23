@@ -14,6 +14,7 @@ import NotBefore from './components/NotBefore'
 import NotAfter from './components/NotAfter'
 import SubjectDN from './components/SubjectDN'
 import IssuerDN from './components/IssuerDN'
+import RDNSelector from './components/RDNSelector'
 
 const App: React.FC = () => {
   // refs
@@ -36,6 +37,8 @@ const App: React.FC = () => {
     notAfter: '',
     subjectDN: '',
     issuerDN: '',
+    oid: '2.5.4.3',
+    rdn: '',
   })
 
   // setup ws
@@ -133,6 +136,17 @@ const App: React.FC = () => {
       resp.HandleError(ValidationType.Password && ValidationType.PasswordAttemps)
     }
 
+    const getRdnByOidCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, rdn: resp.GetResult() })
+        return
+      }
+
+      resp.HandleError(ValidationType.Password &&
+        ValidationType.PasswordAttemps &&
+        ValidationType.RDN)
+    }
+
     ws.current!.onmessage = (e) => {
       if (e.data === '--heartbeat--') {
         return
@@ -164,6 +178,9 @@ const App: React.FC = () => {
             break
           case MethodName.GetIssuerDN:
             getIssuerDNCallback(resp)
+            break
+          case MethodName.GetRdnByOid:
+            getRdnByOidCallback(resp)
             break
           default:
             // tslint:disable-next-line
@@ -264,6 +281,23 @@ const App: React.FC = () => {
     }
   }
 
+  const handleOIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, oid: e.target.value })
+  }
+
+  const handleRDNClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(client.GetRdnByOid(state.alias, state.path, state.keyAlias,
+        state.password, state.oid, 0))
+    }
+  }
+
   if (!ready) {
     return <Error />
   }
@@ -312,6 +346,12 @@ const App: React.FC = () => {
       <IssuerDN
         value={state.issuerDN}
         onClick={handleIssuerDNClick}
+      />
+      <RDNSelector
+        value={state.rdn}
+        selected={state.oid}
+        onChange={handleOIDChange}
+        onClick={handleRDNClick}
       />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>

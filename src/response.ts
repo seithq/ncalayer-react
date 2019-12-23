@@ -4,6 +4,7 @@ export enum ValidationType {
   Password = 'password',
   PasswordAttemps = 'passwordAttempts',
   KeyType = 'keyType',
+  RDN = 'rdn',
 }
 
 export default class Response {
@@ -45,6 +46,10 @@ export default class Response {
     return this.errorCode === 'EMPTY_KEY_LIST'
   }
 
+  public IsRDNNotFound(): boolean {
+    return this.errorCode === 'RDN_NOT_FOUND'
+  }
+
   public HandleError(type: ValidationType): void {
     if (type === ValidationType.PasswordAttemps) {
       if (this.IsWrongPasswordWithAttempts()) {
@@ -63,6 +68,13 @@ export default class Response {
     if (type === ValidationType.KeyType) {
       if (this.IsWrongKeyType()) {
         alert('Ключи не найдены. Попробуйте выбрать другой тип ключа')
+        return
+      }
+    }
+
+    if (type === ValidationType.RDN) {
+      if (this.IsRDNNotFound()) {
+        alert('Ключ не содержит данный параметр')
         return
       }
     }

@@ -1,36 +1,43 @@
 import React from 'react'
+import Radio from './Fields/Radio'
 
 interface KeyTypeProps {
   selected: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
+const options = [
+  {
+    value: 'SIGN',
+    text: 'Для подписи',
+  },
+  {
+    value: 'AUTH',
+    text: 'Для аутентификаций',
+  },
+  {
+    value: 'ALL',
+    text: 'Любой',
+  },
+]
+
 const KeyType: React.FC<KeyTypeProps> = ({ selected, onChange }) => {
   return (
     <div className='KeyType'>
       <span>Тип ключа:</span>
       <br />
-      <input
-        type='radio'
-        name='keyType'
-        value='SIGN'
-        onChange={onChange}
-        checked={selected === 'SIGN'} /> Для подписи
-      <br />
-      <input
-        type='radio'
-        name='keyType'
-        value='AUTH'
-        onChange={onChange}
-        checked={selected === 'AUTH'} /> Для аутентификаций
-      <br />
-      <input
-        type='radio'
-        name='keyType'
-        value='ALL'
-        onChange={onChange}
-        checked={selected === 'ALL'} /> Любой
-      <br />
+      {options.map((item) => {
+        return (
+          <Radio
+            key={item.value}
+            name='keyType'
+            value={item.value}
+            onChange={onChange}
+            checked={selected === item.value}
+            text={item.text}
+          />
+        )
+      })}
     </div>
   )
 }

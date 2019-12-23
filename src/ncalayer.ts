@@ -7,11 +7,12 @@ export enum MethodName {
   GetNotAfter = 'getNotAfter',
   GetSubjectDN = 'getSubjectDN',
   GetIssuerDN = 'getIssuerDN',
+  GetRdnByOid = 'getRdnByOid',
 }
 
 interface Payload {
   method: MethodName
-  args: string[]
+  args: any[]
 }
 
 export default class NCALayer {
@@ -73,6 +74,15 @@ export default class NCALayer {
     const data: Payload = {
       method: MethodName.GetIssuerDN,
       args: [storageName, storagePath, keyAlias, password],
+    }
+    return this.send(data)
+  }
+
+  public GetRdnByOid(storageName: string, storagePath: string, keyAlias: string,
+                     password: string, oid: string, oidIndex: number): MethodName {
+    const data: Payload = {
+      method: MethodName.GetRdnByOid,
+      args: [storageName, storagePath, keyAlias, password, oid, oidIndex],
     }
     return this.send(data)
   }
