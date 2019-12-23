@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import NCALayer, { MethodName } from './ncalayer'
-import Response from './response'
-import { isNone, isNullOrEmpty, extractKeyAlias } from './helper'
+import Response, { ValidationType } from './response'
+import { isNone, isNullOrEmpty, extractKeyAlias, checkInputs } from './helper'
 import Error from './components/Error'
 import Status from './components/Status'
 import StorageAlias from './components/StorageAlias'
@@ -87,86 +87,50 @@ const App: React.FC = () => {
           keys: k,
           keyAlias: (k.length > 0) ? extractKeyAlias(k[0]) : '',
         })
-      } else {
-        setState({ ...state, keys: [], keyAlias: '' })
-        if (resp.IsWrongPasswordWithAttempts()) {
-          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
-          return
-        }
-        if (resp.IsWrongPassword()) {
-          alert('Неправильный пароль!')
-          return
-        }
-        if (resp.IsWrongKeyType()) {
-          alert('Ключи не найдены. Попробуйте выбрать другой тип ключа')
-          return
-        }
-        alert('Ошибка: ' + resp.GetErrorCode())
+
+        return
       }
+
+      setState({ ...state, keys: [], keyAlias: '' })
+      resp.HandleError(
+        ValidationType.Password &&
+        ValidationType.PasswordAttemps &&
+        ValidationType.KeyType)
     }
 
     const getNotBeforeCallback = (resp: Response) => {
       if (resp.IsOK()) {
         setState({ ...state, notBefore: resp.GetResult() })
-      } else {
-        if (resp.IsWrongPasswordWithAttempts()) {
-          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
-          return
-        }
-        if (resp.IsWrongPassword()) {
-          alert('Неправильный пароль!')
-          return
-        }
-        alert('Ошибка: ' + resp.GetErrorCode())
+        return
       }
+
+      resp.HandleError(ValidationType.Password && ValidationType.PasswordAttemps)
     }
 
     const getNotAfterCallback = (resp: Response) => {
       if (resp.IsOK()) {
         setState({ ...state, notAfter: resp.GetResult() })
-      } else {
-        if (resp.IsWrongPasswordWithAttempts()) {
-          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
-          return
-        }
-        if (resp.IsWrongPassword()) {
-          alert('Неправильный пароль!')
-          return
-        }
-        alert('Ошибка: ' + resp.GetErrorCode())
+        return
       }
+      resp.HandleError(ValidationType.Password && ValidationType.PasswordAttemps)
     }
 
     const getSubjectDNCallback = (resp: Response) => {
       if (resp.IsOK()) {
         setState({ ...state, subjectDN: resp.GetResult() })
-      } else {
-        if (resp.IsWrongPasswordWithAttempts()) {
-          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
-          return
-        }
-        if (resp.IsWrongPassword()) {
-          alert('Неправильный пароль!')
-          return
-        }
-        alert('Ошибка: ' + resp.GetErrorCode())
+        return
       }
+
+      resp.HandleError(ValidationType.Password && ValidationType.PasswordAttemps)
     }
 
     const getIssuerDNCallback = (resp: Response) => {
       if (resp.IsOK()) {
         setState({ ...state, issuerDN: resp.GetResult() })
-      } else {
-        if (resp.IsWrongPasswordWithAttempts()) {
-          alert('Неправильный пароль! Количество оставшихся попыток: ' + resp.GetResult())
-          return
-        }
-        if (resp.IsWrongPassword()) {
-          alert('Неправильный пароль!')
-          return
-        }
-        alert('Ошибка: ' + resp.GetErrorCode())
+        return
       }
+
+      resp.HandleError(ValidationType.Password && ValidationType.PasswordAttemps)
     }
 
     ws.current!.onmessage = (e) => {
@@ -213,118 +177,149 @@ const App: React.FC = () => {
   // NCALayer client
   const client = new NCALayer(ws.current!)
 
+  // handlers
+  const handleAliasChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!isNone(e.target.value)) {
+      setState({ ...state, alias: e.target.value })
+      setMethod(MethodName.BrowseKeyStore)
+      client.BrowseKeyStore(e.target.value, 'P12', state.path)
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, password: e.target.value })
+  }
+
+  const handleKeyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, keyType: e.target.value })
+  }
+
+  const handleKeyAliasChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setState({ ...state, keyAlias: extractKeyAlias(e.target.value) })
+  }
+
+  const handleKeyAliasClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+    })
+    if (ok) {
+      setMethod(MethodName.GetKeys)
+      client.GetKeys(state.alias, state.path, state.password, state.keyType)
+    }
+  }
+
+  const handleLangChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, lang: e.target.value })
+  }
+
+  const handleLangClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setMethod(MethodName.SetLocale)
+    client.SetLocale(state.lang)
+  }
+
+  const handleNotBeforeClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(MethodName.GetNotBefore)
+      client.GetNotBefore(state.alias, state.path, state.keyAlias, state.password)
+    }
+  }
+
+  const handleNotAfterClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(MethodName.GetNotAfter)
+      client.GetNotAfter(state.alias, state.path, state.keyAlias, state.password)
+    }
+  }
+
+  const handleSubjectDNClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(MethodName.GetSubjectDN)
+      client.GetSubjectDN(state.alias, state.path, state.keyAlias, state.password)
+    }
+  }
+
+  const handleIssuerDNClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(MethodName.GetIssuerDN)
+      client.GetIssuerDN(state.alias, state.path, state.keyAlias, state.password)
+    }
+  }
+
   if (!ready) {
     return <Error />
   }
 
   return (
     <div className='App'>
-      <Status ready={ready} />
-      <StorageAlias selected={state.alias} onChange={(e) => {
-        if (!isNone(e.target.value)) {
-          setState({ ...state, alias: e.target.value })
-          setMethod(MethodName.BrowseKeyStore)
-          client.BrowseKeyStore(e.target.value, 'P12', state.path)
-        }
-      }} />
-      <StoragePath path={state.path} />
-      <Password onChange={(e) => {
-        setState({ ...state, password: e.target.value })
-      }} />
-      <KeyType selected={state.keyType} onChange={(e) => {
-        setState({ ...state, keyType: e.target.value })
-      }} />
-      <KeyList keys={state.keys}
-        onChange={(e) => {
-          setState({ ...state, keyAlias: extractKeyAlias(e.target.value) })
-        }}
-        onClick={(e) => {
-          if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
-            alert('Не выбрано хранилище')
-            return
-          }
-          if (isNullOrEmpty(state.password)) {
-            alert('Введите пароль к хранилищу')
-            return
-          }
-          setMethod(MethodName.GetKeys)
-          client.GetKeys(state.alias, state.path, state.password, state.keyType)
-        }}
+      <Status
+        ready={ready}
+      />
+      <StorageAlias
+        selected={state.alias}
+        onChange={handleAliasChange}
+      />
+      <StoragePath
+        path={state.path}
+      />
+      <Password
+        onChange={handlePasswordChange}
+      />
+      <KeyType
+        selected={state.keyType}
+        onChange={handleKeyTypeChange}
+      />
+      <KeyList
+        keys={state.keys}
+        onChange={handleKeyAliasChange}
+        onClick={handleKeyAliasClick}
       />
       <Locale
         selected={state.lang}
-        onChange={(e) => {
-          setState({ ...state, lang: e.target.value })
-        }}
-        onClick={(e) => {
-          setMethod(MethodName.SetLocale)
-          client.SetLocale(state.lang)
-        }}
+        onChange={handleLangChange}
+        onClick={handleLangClick}
       />
-      <NotBefore value={state.notBefore} onClick={(e) => {
-        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
-          alert('Не выбрано хранилище')
-          return
-        }
-        if (isNullOrEmpty(state.password)) {
-          alert('Введите пароль к хранилищу')
-          return
-        }
-        if (isNullOrEmpty(state.keyAlias)) {
-          alert('Не выбран ключ')
-          return
-        }
-        setMethod(MethodName.GetNotBefore)
-        client.GetNotBefore(state.alias, state.path, state.keyAlias, state.password)
-      }} />
-      <NotAfter value={state.notAfter} onClick={(e) => {
-        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
-          alert('Не выбрано хранилище')
-          return
-        }
-        if (isNullOrEmpty(state.password)) {
-          alert('Введите пароль к хранилищу')
-          return
-        }
-        if (isNullOrEmpty(state.keyAlias)) {
-          alert('Не выбран ключ')
-          return
-        }
-        setMethod(MethodName.GetNotAfter)
-        client.GetNotAfter(state.alias, state.path, state.keyAlias, state.password)
-      }} />
-      <SubjectDN value={state.subjectDN} onClick={(e) => {
-        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
-          alert('Не выбрано хранилище')
-          return
-        }
-        if (isNullOrEmpty(state.password)) {
-          alert('Введите пароль к хранилищу')
-          return
-        }
-        if (isNullOrEmpty(state.keyAlias)) {
-          alert('Не выбран ключ')
-          return
-        }
-        setMethod(MethodName.GetSubjectDN)
-        client.GetSubjectDN(state.alias, state.path, state.keyAlias, state.password)
-      }} />
-      <IssuerDN value={state.issuerDN} onClick={(e) => {
-        if (isNullOrEmpty(state.path) || isNullOrEmpty(state.alias)) {
-          alert('Не выбрано хранилище')
-          return
-        }
-        if (isNullOrEmpty(state.password)) {
-          alert('Введите пароль к хранилищу')
-          return
-        }
-        if (isNullOrEmpty(state.keyAlias)) {
-          alert('Не выбран ключ')
-          return
-        }
-        setMethod(MethodName.GetIssuerDN)
-        client.GetIssuerDN(state.alias, state.path, state.keyAlias, state.password)
-      }} />
+      <NotBefore
+        value={state.notBefore}
+        onClick={handleNotBeforeClick}
+      />
+      <NotAfter
+        value={state.notAfter}
+        onClick={handleNotAfterClick}
+      />
+      <SubjectDN
+        value={state.subjectDN}
+        onClick={handleSubjectDNClick}
+      />
+      <IssuerDN
+        value={state.issuerDN}
+        onClick={handleIssuerDNClick}
+      />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>
   )

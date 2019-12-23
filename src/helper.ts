@@ -13,3 +13,30 @@ export const extractKeyAlias = (s: string): string => {
   }
   return parts[3]
 }
+
+export interface InputCheck {
+  path?: string
+  alias?: string
+  password?: string
+  keyAlias?: string
+}
+
+export const checkInputs = (input: InputCheck): boolean => {
+  if (input.path !== undefined && input.path === '') {
+    alert('Не выбрано хранилище')
+    return false
+  }
+  if (input.alias !== undefined && input.alias === '') {
+    alert('Не выбрано хранилище')
+    return false
+  }
+  if (input.password !== undefined && input.password === '') {
+    alert('Введите пароль к хранилищу')
+    return false
+  }
+  if (input.keyAlias !== undefined && input.keyAlias === '') {
+    alert('Не выбран ключ')
+    return false
+  }
+  return true
+}
