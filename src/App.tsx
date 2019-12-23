@@ -181,8 +181,7 @@ const App: React.FC = () => {
   const handleAliasChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (!isNone(e.target.value)) {
       setState({ ...state, alias: e.target.value })
-      setMethod(MethodName.BrowseKeyStore)
-      client.BrowseKeyStore(e.target.value, 'P12', state.path)
+      setMethod(client.BrowseKeyStore(e.target.value, 'P12', state.path))
     }
   }
 
@@ -205,8 +204,7 @@ const App: React.FC = () => {
       password: state.password,
     })
     if (ok) {
-      setMethod(MethodName.GetKeys)
-      client.GetKeys(state.alias, state.path, state.password, state.keyType)
+      setMethod(client.GetKeys(state.alias, state.path, state.password, state.keyType))
     }
   }
 
@@ -215,8 +213,7 @@ const App: React.FC = () => {
   }
 
   const handleLangClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setMethod(MethodName.SetLocale)
-    client.SetLocale(state.lang)
+    setMethod(client.SetLocale(state.lang))
   }
 
   const handleNotBeforeClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -227,8 +224,7 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(MethodName.GetNotBefore)
-      client.GetNotBefore(state.alias, state.path, state.keyAlias, state.password)
+      setMethod(client.GetNotBefore(state.alias, state.path, state.keyAlias, state.password))
     }
   }
 
@@ -240,8 +236,7 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(MethodName.GetNotAfter)
-      client.GetNotAfter(state.alias, state.path, state.keyAlias, state.password)
+      setMethod(client.GetNotAfter(state.alias, state.path, state.keyAlias, state.password))
     }
   }
 
@@ -253,8 +248,7 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(MethodName.GetSubjectDN)
-      client.GetSubjectDN(state.alias, state.path, state.keyAlias, state.password)
+      setMethod(client.GetSubjectDN(state.alias, state.path, state.keyAlias, state.password))
     }
   }
 
@@ -266,8 +260,7 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(MethodName.GetIssuerDN)
-      client.GetIssuerDN(state.alias, state.path, state.keyAlias, state.password)
+      setMethod(client.GetIssuerDN(state.alias, state.path, state.keyAlias, state.password))
     }
   }
 
