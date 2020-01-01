@@ -8,6 +8,8 @@ export enum MethodName {
   GetSubjectDN = 'getSubjectDN',
   GetIssuerDN = 'getIssuerDN',
   GetRdnByOid = 'getRdnByOid',
+  SignPlainData = 'signPlainData',
+  VerifyPlainData = 'verifyPlainData',
 }
 
 interface Payload {
@@ -83,6 +85,24 @@ export default class NCALayer {
     const data: Payload = {
       method: MethodName.GetRdnByOid,
       args: [storageName, storagePath, keyAlias, password, oid, oidIndex],
+    }
+    return this.send(data)
+  }
+
+  public SignPlainData(storageName: string, storagePath: string, keyAlias: string,
+                       password: string, toSign: string): MethodName {
+    const data: Payload = {
+      method: MethodName.SignPlainData,
+      args: [storageName, storagePath, keyAlias, password, toSign],
+    }
+    return this.send(data)
+  }
+
+  public VerifyPlainData(storageName: string, storagePath: string, keyAlias: string,
+                         password: string, toVerify: string, signature: string): MethodName {
+    const data: Payload = {
+      method: MethodName.VerifyPlainData,
+      args: [storageName, storagePath, keyAlias, password, toVerify, signature],
     }
     return this.send(data)
   }
