@@ -27,6 +27,7 @@ const App: React.FC = () => {
 
   // input state
   const [state, setState] = useState({
+    version: '',
     alias: 'NONE',
     path: '',
     password: '',
@@ -246,6 +247,10 @@ const App: React.FC = () => {
           default:
             // tslint:disable-next-line
             console.log(e)
+            const payload = JSON.parse(e.data)
+            if (payload.result.version) {
+              setState({ ...state, version: payload.result.version })
+            }
             break
         }
       }
@@ -466,7 +471,7 @@ const App: React.FC = () => {
 
   return (
     <div className='App'>
-      <Status ready={ready} />
+      <Status ready={ready} version={state.version} />
       <StorageAlias selected={state.alias} onChange={handleAliasChange} />
       <StoragePath path={state.path} />
       <Password onChange={handlePasswordChange} />
