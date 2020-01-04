@@ -1,6 +1,7 @@
 import { isNone, isNullOrEmpty } from './helper'
 
 export enum ValidationType {
+  Common = 'common',
   Password = 'password',
   PasswordAttemps = 'passwordAttempts',
   KeyType = 'keyType',

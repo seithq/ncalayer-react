@@ -20,6 +20,7 @@ import CMSSignature from './components/CMSSignature'
 import CMSSignatureFile from './components/CMSSignatureFile'
 import XML from './components/XML'
 import XMLNode from './components/XMLNode'
+import Hasher from './components/Hasher'
 
 const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
                 <root>
@@ -97,6 +98,10 @@ const App: React.FC = () => {
     xmlNodeSigned: '',
     xmlNodeValid: false,
     xmlNodeMessage: 'Не проверено',
+    // hash
+    toHash: '',
+    alg: 'SHA1',
+    hashed: '',
   })
 
   // setup ws
@@ -403,6 +408,15 @@ const App: React.FC = () => {
       )
     }
 
+    const getHashCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, hashed: resp.GetResult() })
+        return
+      }
+
+      resp.HandleError(ValidationType.Common)
+    }
+
     ws.current!.onmessage = e => {
       if (e.data === '--heartbeat--') {
         return
@@ -470,6 +484,9 @@ const App: React.FC = () => {
             break
           case MethodName.VerifyXmlByElementId:
             verifyXmlByElementIdCallback(resp)
+            break
+          case MethodName.GetHash:
+            getHashCallback(resp)
             break
           default:
             // tslint:disable-next-line
@@ -941,6 +958,18 @@ const App: React.FC = () => {
     }
   }
 
+  const handleAlgSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setState({ ...state, alg: e.target.value })
+  }
+
+  const handleHashDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, toHash: e.target.value })
+  }
+
+  const handleHashClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setMethod(client.GetHash(state.toHash, state.alg))
+  }
+
   if (!ready) {
     return <Error />
   }
@@ -1021,6 +1050,13 @@ const App: React.FC = () => {
         onVerifyIdAttrChange={handleXmlNodeVerifyAttributeChange}
         onVerifyParentElementChange={handleXmlNodeVerifyParentChange}
         onVerify={handleXmlNodeVerify}
+      />
+      <Hasher
+        selected={state.alg}
+        hashed={state.hashed}
+        onSelect={handleAlgSelect}
+        onChange={handleHashDataChange}
+        onClick={handleHashClick}
       />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>

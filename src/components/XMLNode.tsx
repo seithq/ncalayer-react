@@ -39,7 +39,7 @@ const XMLNode: React.FC<XMLNodeProps> = ({
       <textarea
         onChange={onChange}
         defaultValue={defaultXML}
-        style={{ height: 100, width: 200 }}
+        style={{ height: 200, width: 400 }}
       />
       <br />
       <label htmlFor='element'>Подписываемый элемент XML:</label>
