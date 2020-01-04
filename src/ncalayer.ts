@@ -1,6 +1,7 @@
 export enum MethodName {
   None = 'none',
   BrowseKeyStore = 'browseKeyStore',
+  ShowFileChooser = 'showFileChooser',
   GetKeys = 'getKeys',
   SetLocale = 'setLocale',
   GetNotBefore = 'getNotBefore',
@@ -12,6 +13,8 @@ export enum MethodName {
   VerifyPlainData = 'verifyPlainData',
   CreateCMSSignature = 'createCMSSignature',
   VerifyCMSSignature = 'verifyCMSSignature',
+  CreateCMSSignatureFromFile = 'createCMSSignatureFromFile',
+  VerifyCMSSignatureFromFile = 'verifyCMSSignatureFromFile',
   SignXml = 'signXml',
   VerifyXml = 'verifyXml',
   SignXmlByElementId = 'signXmlByElementId',
@@ -39,6 +42,17 @@ export default class NCALayer {
     const data: Payload = {
       method: MethodName.BrowseKeyStore,
       args: [storageName, fileExtension, currentDirectory],
+    }
+    return this.send(data)
+  }
+
+  public ShowFileChooser(
+    fileExtension: string,
+    currentDirectory: string
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.ShowFileChooser,
+      args: [fileExtension, currentDirectory],
     }
     return this.send(data)
   }
@@ -179,6 +193,32 @@ export default class NCALayer {
     const data: Payload = {
       method: MethodName.VerifyCMSSignature,
       args: [toVerify, signature],
+    }
+    return this.send(data)
+  }
+
+  public CreateCMSSignatureFromFile(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    filePath: string,
+    attached: boolean
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.CreateCMSSignatureFromFile,
+      args: [storageName, storagePath, keyAlias, password, filePath, attached],
+    }
+    return this.send(data)
+  }
+
+  public VerifyCMSSignatureFromFile(
+    toVerify: string,
+    filePath: string
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.VerifyCMSSignatureFromFile,
+      args: [toVerify, filePath],
     }
     return this.send(data)
   }

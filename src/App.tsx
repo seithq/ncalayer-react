@@ -17,6 +17,7 @@ import IssuerDN from './components/IssuerDN'
 import RDNSelector from './components/RDNSelector'
 import PlainData from './components/PlainData'
 import CMSSignature from './components/CMSSignature'
+import CMSSignatureFile from './components/CMSSignatureFile'
 import XML from './components/XML'
 import XMLNode from './components/XMLNode'
 
@@ -75,6 +76,12 @@ const App: React.FC = () => {
     cmsSignatureSigned: '',
     cmsSignatureValid: false,
     cmsSignatureMessage: 'Не проверено',
+    // cms signature form file
+    cmsFilePath: '',
+    cmsFileSignatureFlag: false,
+    cmsFileSignatureSigned: '',
+    cmsFileSignatureValid: false,
+    cmsFileSignatureMessage: 'Не проверено',
     // xml
     xml: defaultXML,
     xmlSigned: '',
@@ -125,6 +132,12 @@ const App: React.FC = () => {
     const browseKeyStoreCallback = (resp: Response) => {
       if (resp.IsOK()) {
         setState({ ...state, path: resp.GetResult() })
+      }
+    }
+
+    const showFileChooserCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, cmsFilePath: resp.GetResult() })
       }
     }
 
@@ -283,6 +296,41 @@ const App: React.FC = () => {
       )
     }
 
+    const createCMSSignatureFromFileCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, cmsFileSignatureSigned: resp.GetResult() })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
+    const verifyCMSSignatureFromFileCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        if (!resp.GetResult()) {
+          setState({
+            ...state,
+            cmsFileSignatureValid: false,
+            cmsFileSignatureMessage: 'Неправильная подпись',
+          })
+          return
+        }
+
+        setState({
+          ...state,
+          cmsFileSignatureValid: true,
+          cmsFileSignatureMessage: 'Валидная подпись',
+        })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
     const signXmlCallback = (resp: Response) => {
       if (resp.IsOK()) {
         setState({ ...state, xmlSigned: resp.GetResult() })
@@ -372,6 +420,9 @@ const App: React.FC = () => {
           case MethodName.BrowseKeyStore:
             browseKeyStoreCallback(resp)
             break
+          case MethodName.ShowFileChooser:
+            showFileChooserCallback(resp)
+            break
           case MethodName.GetKeys:
             getKeysCallback(resp)
             break
@@ -401,6 +452,12 @@ const App: React.FC = () => {
             break
           case MethodName.VerifyCMSSignature:
             verifyCMSSignatureCallback(resp)
+            break
+          case MethodName.CreateCMSSignatureFromFile:
+            createCMSSignatureFromFileCallback(resp)
+            break
+          case MethodName.VerifyCMSSignatureFromFile:
+            verifyCMSSignatureFromFileCallback(resp)
             break
           case MethodName.SignXml:
             signXmlCallback(resp)
@@ -694,6 +751,65 @@ const App: React.FC = () => {
     }
   }
 
+  const handleCMSSignatureFromFileChoose = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setMethod(client.ShowFileChooser('ALL', ''))
+  }
+
+  const handleCMSSignatureFromFileToggle = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    setState({ ...state, cmsFileSignatureFlag: e.currentTarget.checked })
+  }
+
+  const handleCMSSignatureFromFileClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        cmsFileSignatureValid: false,
+        cmsFileSignatureMessage: 'Не проверено',
+      })
+      setMethod(
+        client.CreateCMSSignatureFromFile(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.cmsFilePath,
+          state.cmsFileSignatureFlag
+        )
+      )
+    }
+  }
+
+  const handleCMSSignatureFromFileVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(
+        client.VerifyCMSSignatureFromFile(
+          state.cmsFileSignatureSigned,
+          state.cmsFilePath
+        )
+      )
+    }
+  }
+
   const handleXmlChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setState({ ...state, xml: e.target.value })
   }
@@ -872,6 +988,16 @@ const App: React.FC = () => {
         onToggle={handleCMSSignatureToggle}
         onClick={handleCMSSignatureClick}
         onVerify={handleCMSSignatureVerify}
+      />
+      <CMSSignatureFile
+        filePath={state.cmsFilePath}
+        signed={state.cmsFileSignatureSigned}
+        valid={state.cmsFileSignatureValid}
+        message={state.cmsFileSignatureMessage}
+        onChoose={handleCMSSignatureFromFileChoose}
+        onToggle={handleCMSSignatureFromFileToggle}
+        onClick={handleCMSSignatureFromFileClick}
+        onVerify={handleCMSSignatureFromFileVerify}
       />
       <XML
         defaultXML={state.xml}
