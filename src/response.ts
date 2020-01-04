@@ -53,7 +53,10 @@ export default class Response {
   public HandleError(type: ValidationType): void {
     if (type === ValidationType.PasswordAttemps) {
       if (this.IsWrongPasswordWithAttempts()) {
-        alert('Неправильный пароль! Количество оставшихся попыток: ' + this.GetResult())
+        alert(
+          'Неправильный пароль! Количество оставшихся попыток: ' +
+            this.GetResult()
+        )
         return
       }
     }

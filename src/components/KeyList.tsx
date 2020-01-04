@@ -14,7 +14,9 @@ const KeyList: React.FC<KeyListProps> = ({ keys, onChange, onClick }) => {
       <select onChange={onChange}>
         {keys.map((v, i) => {
           return (
-            <option key={i} value={v}>{v}</option>
+            <option key={i} value={v}>
+              {v}
+            </option>
           )
         })}
       </select>

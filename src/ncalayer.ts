@@ -10,6 +10,8 @@ export enum MethodName {
   GetRdnByOid = 'getRdnByOid',
   SignPlainData = 'signPlainData',
   VerifyPlainData = 'verifyPlainData',
+  CreateCMSSignature = 'createCMSSignature',
+  VerifyCMSSignature = 'verifyCMSSignature',
 }
 
 interface Payload {
@@ -24,7 +26,11 @@ export default class NCALayer {
     this.ws = ws
   }
 
-  public BrowseKeyStore(storageName: string, fileExtension: string, currentDirectory: string): MethodName {
+  public BrowseKeyStore(
+    storageName: string,
+    fileExtension: string,
+    currentDirectory: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.BrowseKeyStore,
       args: [storageName, fileExtension, currentDirectory],
@@ -32,7 +38,12 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public GetKeys(storageName: string, storagePath: string, password: string, type: string): MethodName {
+  public GetKeys(
+    storageName: string,
+    storagePath: string,
+    password: string,
+    type: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.GetKeys,
       args: [storageName, storagePath, password, type],
@@ -48,7 +59,12 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public GetNotBefore(storageName: string, storagePath: string, keyAlias: string, password: string): MethodName {
+  public GetNotBefore(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.GetNotBefore,
       args: [storageName, storagePath, keyAlias, password],
@@ -56,7 +72,12 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public GetNotAfter(storageName: string, storagePath: string, keyAlias: string, password: string): MethodName {
+  public GetNotAfter(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.GetNotAfter,
       args: [storageName, storagePath, keyAlias, password],
@@ -64,7 +85,12 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public GetSubjectDN(storageName: string, storagePath: string, keyAlias: string, password: string): MethodName {
+  public GetSubjectDN(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.GetSubjectDN,
       args: [storageName, storagePath, keyAlias, password],
@@ -72,7 +98,12 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public GetIssuerDN(storageName: string, storagePath: string, keyAlias: string, password: string): MethodName {
+  public GetIssuerDN(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.GetIssuerDN,
       args: [storageName, storagePath, keyAlias, password],
@@ -80,8 +111,14 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public GetRdnByOid(storageName: string, storagePath: string, keyAlias: string,
-                     password: string, oid: string, oidIndex: number): MethodName {
+  public GetRdnByOid(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    oid: string,
+    oidIndex: number
+  ): MethodName {
     const data: Payload = {
       method: MethodName.GetRdnByOid,
       args: [storageName, storagePath, keyAlias, password, oid, oidIndex],
@@ -89,8 +126,13 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public SignPlainData(storageName: string, storagePath: string, keyAlias: string,
-                       password: string, toSign: string): MethodName {
+  public SignPlainData(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    toSign: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.SignPlainData,
       args: [storageName, storagePath, keyAlias, password, toSign],
@@ -98,11 +140,40 @@ export default class NCALayer {
     return this.send(data)
   }
 
-  public VerifyPlainData(storageName: string, storagePath: string, keyAlias: string,
-                         password: string, toVerify: string, signature: string): MethodName {
+  public VerifyPlainData(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    toVerify: string,
+    signature: string
+  ): MethodName {
     const data: Payload = {
       method: MethodName.VerifyPlainData,
       args: [storageName, storagePath, keyAlias, password, toVerify, signature],
+    }
+    return this.send(data)
+  }
+
+  public CreateCMSSignature(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    toSign: string,
+    attached: boolean
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.CreateCMSSignature,
+      args: [storageName, storagePath, keyAlias, password, toSign, attached],
+    }
+    return this.send(data)
+  }
+
+  public VerifyCMSSignature(toVerify: string, signature: string): MethodName {
+    const data: Payload = {
+      method: MethodName.VerifyCMSSignature,
+      args: [toVerify, signature],
     }
     return this.send(data)
   }

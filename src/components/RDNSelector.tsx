@@ -55,12 +55,19 @@ const options = [
   },
 ]
 
-const RDNSelector: React.FC<RDNSelectorProps> = ({ value, selected, onChange, onClick }) => {
+const RDNSelector: React.FC<RDNSelectorProps> = ({
+  value,
+  selected,
+  onChange,
+  onClick,
+}) => {
   return (
     <div className='RDN'>
-      <span>Получить значение RDN по OID <strong>(getRdnByOid)</strong></span>
+      <span>
+        Получить значение RDN по OID <strong>(getRdnByOid)</strong>
+      </span>
       <br />
-      {options.map((item) => {
+      {options.map(item => {
         return (
           <Radio
             key={item.value}

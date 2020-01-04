@@ -4,7 +4,11 @@ interface Props {
   text: string
 }
 
-type RadioProps = Props & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
+type RadioProps = Props &
+  React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  >
 
 const Radio: React.FC<RadioProps> = ({ text, ...props }) => {
   return (
@@ -16,7 +20,8 @@ const Radio: React.FC<RadioProps> = ({ text, ...props }) => {
         value={props.value}
         onChange={props.onChange}
         checked={props.checked}
-      /> {text}
+      />{' '}
+      {text}
       <br />
     </>
   )

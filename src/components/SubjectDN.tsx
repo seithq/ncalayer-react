@@ -8,7 +8,9 @@ interface SubjectDNProps {
 const SubjectDN: React.FC<SubjectDNProps> = ({ value, onClick }) => {
   return (
     <div className='SubjectDN'>
-      <span>Данные субъекта <strong>(getSubjectDN)</strong></span>
+      <span>
+        Данные субъекта <strong>(getSubjectDN)</strong>
+      </span>
       <br />
       <textarea readOnly value={value} />
       <button onClick={onClick}>Узнать</button>

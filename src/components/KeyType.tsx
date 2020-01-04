@@ -26,7 +26,7 @@ const KeyType: React.FC<KeyTypeProps> = ({ selected, onChange }) => {
     <div className='KeyType'>
       <span>Тип ключа:</span>
       <br />
-      {options.map((item) => {
+      {options.map(item => {
         return (
           <Radio
             key={item.value}

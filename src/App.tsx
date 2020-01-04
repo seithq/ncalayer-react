@@ -16,6 +16,7 @@ import SubjectDN from './components/SubjectDN'
 import IssuerDN from './components/IssuerDN'
 import RDNSelector from './components/RDNSelector'
 import PlainData from './components/PlainData'
+import CMSSignature from './components/CMSSignature'
 
 const App: React.FC = () => {
   // refs
@@ -41,30 +42,37 @@ const App: React.FC = () => {
     issuerDN: '',
     oid: '2.5.4.3',
     rdn: '',
+    // plain data
     plainData: '',
     plainDataSigned: '',
     plainDataValid: false,
     plainDataMessage: 'Не проверено',
+    // cms signature
+    cmsSignature: '',
+    cmsSignatureFlag: false,
+    cmsSignatureSigned: '',
+    cmsSignatureValid: false,
+    cmsSignatureMessage: 'Не проверено',
   })
 
   // setup ws
   useEffect(() => {
     ws.current = new WebSocket('wss://127.0.0.1:13579/')
 
-    ws.current.onopen = (e) => {
+    ws.current.onopen = e => {
       // tslint:disable-next-line
       console.log('connection opened')
       setReady(true)
     }
 
-    ws.current.onclose = (e) => {
+    ws.current.onclose = e => {
       if (e.wasClean) {
         // tslint:disable-next-line
         console.log('connection closed')
       } else {
         // tslint:disable-next-line
         console.log(
-          'connection error: [code]=' + e.code + ', [reason]=' + e.reason,
+          'connection error: [code]=' + e.code + ', [reason]=' + e.reason
         )
       }
       setReady(false)
@@ -89,7 +97,7 @@ const App: React.FC = () => {
         resp
           .GetResult()
           .split('\n')
-          .forEach((el) => {
+          .forEach(el => {
             if (isNullOrEmpty(el)) {
               return
             }
@@ -108,7 +116,7 @@ const App: React.FC = () => {
       resp.HandleError(
         ValidationType.Password &&
           ValidationType.PasswordAttemps &&
-          ValidationType.KeyType,
+          ValidationType.KeyType
       )
     }
 
@@ -119,7 +127,7 @@ const App: React.FC = () => {
       }
 
       resp.HandleError(
-        ValidationType.Password && ValidationType.PasswordAttemps,
+        ValidationType.Password && ValidationType.PasswordAttemps
       )
     }
 
@@ -129,7 +137,7 @@ const App: React.FC = () => {
         return
       }
       resp.HandleError(
-        ValidationType.Password && ValidationType.PasswordAttemps,
+        ValidationType.Password && ValidationType.PasswordAttemps
       )
     }
 
@@ -140,7 +148,7 @@ const App: React.FC = () => {
       }
 
       resp.HandleError(
-        ValidationType.Password && ValidationType.PasswordAttemps,
+        ValidationType.Password && ValidationType.PasswordAttemps
       )
     }
 
@@ -151,7 +159,7 @@ const App: React.FC = () => {
       }
 
       resp.HandleError(
-        ValidationType.Password && ValidationType.PasswordAttemps,
+        ValidationType.Password && ValidationType.PasswordAttemps
       )
     }
 
@@ -164,7 +172,7 @@ const App: React.FC = () => {
       resp.HandleError(
         ValidationType.Password &&
           ValidationType.PasswordAttemps &&
-          ValidationType.RDN,
+          ValidationType.RDN
       )
     }
 
@@ -175,7 +183,7 @@ const App: React.FC = () => {
       }
 
       resp.HandleError(
-        ValidationType.Password && ValidationType.PasswordAttemps,
+        ValidationType.Password && ValidationType.PasswordAttemps
       )
     }
 
@@ -199,11 +207,46 @@ const App: React.FC = () => {
       }
 
       resp.HandleError(
-        ValidationType.Password && ValidationType.PasswordAttemps,
+        ValidationType.Password && ValidationType.PasswordAttemps
       )
     }
 
-    ws.current!.onmessage = (e) => {
+    const createCMSSignatureCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, cmsSignatureSigned: resp.GetResult() })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
+    const verifyCMSSignatureCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        if (!resp.GetResult()) {
+          setState({
+            ...state,
+            cmsSignatureValid: false,
+            cmsSignatureMessage: 'Неправильная подпись',
+          })
+          return
+        }
+
+        setState({
+          ...state,
+          cmsSignatureValid: true,
+          cmsSignatureMessage: 'Валидная подпись',
+        })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
+    ws.current!.onmessage = e => {
       if (e.data === '--heartbeat--') {
         return
       }
@@ -213,7 +256,7 @@ const App: React.FC = () => {
         const resp = new Response(
           data.result,
           data.secondResult,
-          data.errorCode,
+          data.errorCode
         )
 
         switch (method) {
@@ -243,6 +286,12 @@ const App: React.FC = () => {
             break
           case MethodName.VerifyPlainData:
             verifyPlainDataCallback(resp)
+            break
+          case MethodName.CreateCMSSignature:
+            createCMSSignatureCallback(resp)
+            break
+          case MethodName.VerifyCMSSignature:
+            verifyCMSSignatureCallback(resp)
             break
           default:
             // tslint:disable-next-line
@@ -281,7 +330,7 @@ const App: React.FC = () => {
   }
 
   const handleKeyAliasClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -290,7 +339,7 @@ const App: React.FC = () => {
     })
     if (ok) {
       setMethod(
-        client.GetKeys(state.alias, state.path, state.password, state.keyType),
+        client.GetKeys(state.alias, state.path, state.password, state.keyType)
       )
     }
   }
@@ -300,13 +349,13 @@ const App: React.FC = () => {
   }
 
   const handleLangClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     setMethod(client.SetLocale(state.lang))
   }
 
   const handleNotBeforeClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -320,14 +369,14 @@ const App: React.FC = () => {
           state.alias,
           state.path,
           state.keyAlias,
-          state.password,
-        ),
+          state.password
+        )
       )
     }
   }
 
   const handleNotAfterClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -341,14 +390,14 @@ const App: React.FC = () => {
           state.alias,
           state.path,
           state.keyAlias,
-          state.password,
-        ),
+          state.password
+        )
       )
     }
   }
 
   const handleSubjectDNClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -362,14 +411,14 @@ const App: React.FC = () => {
           state.alias,
           state.path,
           state.keyAlias,
-          state.password,
-        ),
+          state.password
+        )
       )
     }
   }
 
   const handleIssuerDNClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -383,8 +432,8 @@ const App: React.FC = () => {
           state.alias,
           state.path,
           state.keyAlias,
-          state.password,
-        ),
+          state.password
+        )
       )
     }
   }
@@ -394,7 +443,7 @@ const App: React.FC = () => {
   }
 
   const handleRDNClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -410,8 +459,8 @@ const App: React.FC = () => {
           state.keyAlias,
           state.password,
           state.oid,
-          0,
-        ),
+          0
+        )
       )
     }
   }
@@ -421,7 +470,7 @@ const App: React.FC = () => {
   }
 
   const handlePlainDataClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -430,20 +479,25 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
+      setState({
+        ...state,
+        plainDataValid: false,
+        plainDataMessage: 'Не проверено',
+      })
       setMethod(
         client.SignPlainData(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
-          state.plainData,
-        ),
+          state.plainData
+        )
       )
     }
   }
 
   const handlePlainDataVerify = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const ok = checkInputs({
       path: state.path,
@@ -459,8 +513,62 @@ const App: React.FC = () => {
           state.keyAlias,
           state.password,
           state.plainData,
-          state.plainDataSigned,
-        ),
+          state.plainDataSigned
+        )
+      )
+    }
+  }
+
+  const handleCMSSignatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, cmsSignature: e.target.value })
+  }
+
+  const handleCMSSignatureToggle = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    setState({ ...state, cmsSignatureFlag: e.currentTarget.checked })
+  }
+
+  const handleCMSSignatureClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        cmsSignatureValid: false,
+        cmsSignatureMessage: 'Не проверено',
+      })
+      setMethod(
+        client.CreateCMSSignature(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.cmsSignature,
+          state.cmsSignatureFlag
+        )
+      )
+    }
+  }
+
+  const handleCMSSignatureVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(
+        client.VerifyCMSSignature(state.cmsSignatureSigned, state.cmsSignature)
       )
     }
   }
@@ -503,6 +611,15 @@ const App: React.FC = () => {
         onChange={handlePlainDataChange}
         onClick={handlePlainDataClick}
         onVerify={handlePlainDataVerify}
+      />
+      <CMSSignature
+        signed={state.cmsSignatureSigned}
+        valid={state.cmsSignatureValid}
+        message={state.cmsSignatureMessage}
+        onChange={handleCMSSignatureChange}
+        onToggle={handleCMSSignatureToggle}
+        onClick={handleCMSSignatureClick}
+        onVerify={handleCMSSignatureVerify}
       />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>

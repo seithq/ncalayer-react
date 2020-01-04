@@ -8,7 +8,9 @@ interface IssuerDNProps {
 const IssuerDN: React.FC<IssuerDNProps> = ({ value, onClick }) => {
   return (
     <div className='IssuerDN'>
-      <span>Данные Удостоверяющего центра <strong>(getIssuerDN)</strong></span>
+      <span>
+        Данные Удостоверяющего центра <strong>(getIssuerDN)</strong>
+      </span>
       <br />
       <textarea readOnly value={value} />
       <button onClick={onClick}>Узнать</button>

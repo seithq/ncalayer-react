@@ -8,7 +8,9 @@ interface NotBeforeProps {
 const NotBefore: React.FC<NotBeforeProps> = ({ value, onClick }) => {
   return (
     <div className='NotBefore'>
-      <span>Время начала действия сертификата <strong>(getNotBefore)</strong></span>
+      <span>
+        Время начала действия сертификата <strong>(getNotBefore)</strong>
+      </span>
       <br />
       <input type='text' readOnly value={value} />
       <button onClick={onClick}>Узнать</button>
