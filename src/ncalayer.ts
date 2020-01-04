@@ -12,6 +12,11 @@ export enum MethodName {
   VerifyPlainData = 'verifyPlainData',
   CreateCMSSignature = 'createCMSSignature',
   VerifyCMSSignature = 'verifyCMSSignature',
+  SignXml = 'signXml',
+  VerifyXml = 'verifyXml',
+  SignXmlByElementId = 'signXmlByElementId',
+  VerifyXmlByElementId = 'verifyXmlByElementId',
+  GetHash = 'getHash',
 }
 
 interface Payload {
@@ -174,6 +179,75 @@ export default class NCALayer {
     const data: Payload = {
       method: MethodName.VerifyCMSSignature,
       args: [toVerify, signature],
+    }
+    return this.send(data)
+  }
+
+  public SignXml(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    toSign: string
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.SignXml,
+      args: [storageName, storagePath, keyAlias, password, toSign],
+    }
+    return this.send(data)
+  }
+
+  public VerifyXml(signature: string): MethodName {
+    const data: Payload = {
+      method: MethodName.VerifyXml,
+      args: [signature],
+    }
+    return this.send(data)
+  }
+
+  public SignXmlByElementId(
+    storageName: string,
+    storagePath: string,
+    keyAlias: string,
+    password: string,
+    toSign: string,
+    elementName: string,
+    idAttrName: string,
+    parentElementName: string
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.SignXmlByElementId,
+      args: [
+        storageName,
+        storagePath,
+        keyAlias,
+        password,
+        toSign,
+        elementName,
+        idAttrName,
+        parentElementName,
+      ],
+    }
+    return this.send(data)
+  }
+
+  public VerifyXmlByElementId(
+    signature: string,
+    idAttrName: string,
+    parentElementName: string
+  ): MethodName {
+    const data: Payload = {
+      method: MethodName.VerifyXml,
+      args: [signature, idAttrName, parentElementName],
+    }
+    this.send(data)
+    return MethodName.VerifyXmlByElementId
+  }
+
+  public GetHash(input: string, digestAlg: string): MethodName {
+    const data: Payload = {
+      method: MethodName.GetHash,
+      args: [input, digestAlg],
     }
     return this.send(data)
   }

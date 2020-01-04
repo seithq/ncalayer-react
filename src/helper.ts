@@ -19,6 +19,8 @@ export interface InputCheck {
   alias?: string
   password?: string
   keyAlias?: string
+  elementName?: string
+  attribute?: string
 }
 
 export const checkInputs = (input: InputCheck): boolean => {
@@ -36,6 +38,14 @@ export const checkInputs = (input: InputCheck): boolean => {
   }
   if (input.keyAlias !== undefined && input.keyAlias === '') {
     alert('Не выбран ключ')
+    return false
+  }
+  if (input.elementName !== undefined && input.elementName === '') {
+    alert('Не выбран подписываемый элемент')
+    return false
+  }
+  if (input.attribute !== undefined && input.attribute === '') {
+    alert('Не выбран атрибут идентификации элемента')
     return false
   }
   return true

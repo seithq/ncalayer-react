@@ -5,6 +5,8 @@ export enum ValidationType {
   PasswordAttemps = 'passwordAttempts',
   KeyType = 'keyType',
   RDN = 'rdn',
+  XML = 'xml',
+  Signature = 'signature',
 }
 
 export default class Response {
@@ -50,6 +52,14 @@ export default class Response {
     return this.errorCode === 'RDN_NOT_FOUND'
   }
 
+  public IsWrongXml(): boolean {
+    return this.errorCode === 'XML_PARSE_EXCEPTION'
+  }
+
+  public IsWrongSignature(): boolean {
+    return this.errorCode === 'SIGNATURE_VALIDATION_ERROR'
+  }
+
   public HandleError(type: ValidationType): void {
     if (type === ValidationType.PasswordAttemps) {
       if (this.IsWrongPasswordWithAttempts()) {
@@ -78,6 +88,20 @@ export default class Response {
     if (type === ValidationType.RDN) {
       if (this.IsRDNNotFound()) {
         alert('Ключ не содержит данный параметр')
+        return
+      }
+    }
+
+    if (type === ValidationType.XML) {
+      if (this.IsWrongXml()) {
+        alert('Невалидный формат XML')
+        return
+      }
+    }
+
+    if (type === ValidationType.Signature) {
+      if (this.IsWrongSignature()) {
+        alert('Ошибка валидации XML')
         return
       }
     }

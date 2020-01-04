@@ -17,6 +17,28 @@ import IssuerDN from './components/IssuerDN'
 import RDNSelector from './components/RDNSelector'
 import PlainData from './components/PlainData'
 import CMSSignature from './components/CMSSignature'
+import XML from './components/XML'
+import XMLNode from './components/XMLNode'
+
+const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
+                <root>
+                    <name>Ivan</name>
+                    <iin>123456789012</iin>
+                </root>
+`
+
+const defaultXMLByElementId = `<?xml version="1.0" encoding="utf-8"?>
+                <root>
+                    <person id="personId">
+                        <name>Ivan</name>
+                        <iin>123456789012</iin>
+                    </person>
+                    <company id="companyId">
+                        <name>Company Name</name>
+                        <bin>123456789012</bin>
+                    </company>
+                </root>
+`
 
 const App: React.FC = () => {
   // refs
@@ -53,6 +75,21 @@ const App: React.FC = () => {
     cmsSignatureSigned: '',
     cmsSignatureValid: false,
     cmsSignatureMessage: 'Не проверено',
+    // xml
+    xml: defaultXML,
+    xmlSigned: '',
+    xmlValid: false,
+    xmlMessage: 'Не проверено',
+    // xml by element id
+    xmlNode: defaultXMLByElementId,
+    xmlNodeElement: '',
+    xmlNodeAttribute: '',
+    xmlNodeParent: '',
+    xmlNodeVerifyAttribute: '',
+    xmlNodeVerifyParent: '',
+    xmlNodeSigned: '',
+    xmlNodeValid: false,
+    xmlNodeMessage: 'Не проверено',
   })
 
   // setup ws
@@ -246,6 +283,78 @@ const App: React.FC = () => {
       )
     }
 
+    const signXmlCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, xmlSigned: resp.GetResult() })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
+    const verifyXmlCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        if (!resp.GetResult()) {
+          setState({
+            ...state,
+            xmlValid: false,
+            xmlMessage: 'Неправильная подпись',
+          })
+          return
+        }
+
+        setState({
+          ...state,
+          xmlValid: true,
+          xmlMessage: 'Валидная подпись',
+        })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
+    const signXmlByElementIdCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        setState({ ...state, xmlNodeSigned: resp.GetResult() })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password && ValidationType.PasswordAttemps
+      )
+    }
+
+    const verifyXmlByElementIdCallback = (resp: Response) => {
+      if (resp.IsOK()) {
+        if (!resp.GetResult()) {
+          setState({
+            ...state,
+            xmlNodeValid: false,
+            xmlNodeMessage: 'Неправильная подпись',
+          })
+          return
+        }
+
+        setState({
+          ...state,
+          xmlNodeValid: true,
+          xmlNodeMessage: 'Валидная подпись',
+        })
+        return
+      }
+
+      resp.HandleError(
+        ValidationType.Password &&
+          ValidationType.PasswordAttemps &&
+          ValidationType.Signature
+      )
+    }
+
     ws.current!.onmessage = e => {
       if (e.data === '--heartbeat--') {
         return
@@ -292,6 +401,18 @@ const App: React.FC = () => {
             break
           case MethodName.VerifyCMSSignature:
             verifyCMSSignatureCallback(resp)
+            break
+          case MethodName.SignXml:
+            signXmlCallback(resp)
+            break
+          case MethodName.VerifyXml:
+            verifyXmlCallback(resp)
+            break
+          case MethodName.SignXmlByElementId:
+            signXmlByElementIdCallback(resp)
+            break
+          case MethodName.VerifyXmlByElementId:
+            verifyXmlByElementIdCallback(resp)
             break
           default:
             // tslint:disable-next-line
@@ -573,6 +694,137 @@ const App: React.FC = () => {
     }
   }
 
+  const handleXmlChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setState({ ...state, xml: e.target.value })
+  }
+
+  const handleXmlClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        xmlValid: false,
+        xmlMessage: 'Не проверено',
+      })
+      setMethod(
+        client.SignXml(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.xml
+        )
+      )
+    }
+  }
+
+  const handleXmlVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(client.VerifyXml(state.xmlSigned))
+    }
+  }
+
+  const handleXmlNodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setState({ ...state, xmlNode: e.target.value })
+  }
+
+  const handleXmlNodeElementChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setState({ ...state, xmlNodeElement: e.target.value })
+  }
+
+  const handleXmlNodeAttributeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setState({ ...state, xmlNodeAttribute: e.target.value })
+  }
+
+  const handleXmlNodeParentChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setState({ ...state, xmlNodeParent: e.target.value })
+  }
+
+  const handleXmlNodeClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+      elementName: state.xmlNodeElement,
+      attribute: state.xmlNodeAttribute,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        xmlNodeValid: false,
+        xmlNodeMessage: 'Не проверено',
+      })
+      setMethod(
+        client.SignXmlByElementId(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.xmlNode,
+          state.xmlNodeElement,
+          state.xmlNodeAttribute,
+          state.xmlNodeParent
+        )
+      )
+    }
+  }
+
+  const handleXmlNodeVerifyAttributeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setState({ ...state, xmlNodeVerifyAttribute: e.target.value })
+  }
+
+  const handleXmlNodeVerifyParentChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setState({ ...state, xmlNodeVerifyParent: e.target.value })
+  }
+
+  const handleXmlNodeVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setMethod(
+        client.VerifyXmlByElementId(
+          state.xmlNodeSigned,
+          state.xmlNodeVerifyAttribute,
+          state.xmlNodeVerifyParent
+        )
+      )
+    }
+  }
+
   if (!ready) {
     return <Error />
   }
@@ -620,6 +872,29 @@ const App: React.FC = () => {
         onToggle={handleCMSSignatureToggle}
         onClick={handleCMSSignatureClick}
         onVerify={handleCMSSignatureVerify}
+      />
+      <XML
+        defaultXML={state.xml}
+        signed={state.xmlSigned}
+        valid={state.xmlValid}
+        message={state.xmlMessage}
+        onChange={handleXmlChange}
+        onClick={handleXmlClick}
+        onVerify={handleXmlVerify}
+      />
+      <XMLNode
+        defaultXML={state.xmlNode}
+        signed={state.xmlNodeSigned}
+        valid={state.xmlNodeValid}
+        message={state.xmlNodeMessage}
+        onChange={handleXmlNodeChange}
+        onElementChange={handleXmlNodeElementChange}
+        onIdAttrChange={handleXmlNodeAttributeChange}
+        onParentElementChange={handleXmlNodeParentChange}
+        onClick={handleXmlNodeClick}
+        onVerifyIdAttrChange={handleXmlNodeVerifyAttributeChange}
+        onVerifyParentElementChange={handleXmlNodeVerifyParentChange}
+        onVerify={handleXmlNodeVerify}
       />
       <pre>{JSON.stringify(state, null, 2)}</pre>
     </div>
