@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface LocaleProps {
   selected: string
@@ -8,36 +8,36 @@ interface LocaleProps {
 
 const Locale: React.FC<LocaleProps> = ({ selected, onChange, onClick }) => {
   return (
-    <div className='Locale'>
+    <div className="Locale">
       <span>
         Установка языка <strong>(setLocale)</strong>
       </span>
       <br />
       <input
-        type='radio'
-        name='lang'
-        value='kk'
+        type="radio"
+        name="lang"
+        value="kk"
         onChange={onChange}
-        checked={selected === 'kk'}
-      />{' '}
+        checked={selected === "kk"}
+      />{" "}
       Казахский
       <br />
       <input
-        type='radio'
-        name='lang'
-        value='ru'
+        type="radio"
+        name="lang"
+        value="ru"
         onChange={onChange}
-        checked={selected === 'ru'}
-      />{' '}
+        checked={selected === "ru"}
+      />{" "}
       Русский
       <br />
       <input
-        type='radio'
-        name='lang'
-        value='en'
+        type="radio"
+        name="lang"
+        value="en"
         onChange={onChange}
-        checked={selected === 'en'}
-      />{' '}
+        checked={selected === "en"}
+      />{" "}
       Английский
       <br />
       <button onClick={onClick}>Сменить язык</button>

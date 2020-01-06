@@ -1,5 +1,5 @@
-import React from 'react'
-import SignatureCheck from './Fields/SignatureCheck'
+import React from "react"
+import SignatureCheck from "./Fields/SignatureCheck"
 
 interface XMLNodeProps {
   defaultXML: string
@@ -31,7 +31,7 @@ const XMLNode: React.FC<XMLNodeProps> = ({
   onVerify,
 }) => {
   return (
-    <div className='XMLNode'>
+    <div className="XMLNode">
       <span>
         Подписать XML по идентификатору элемента <strong>(signXMLById)</strong>
       </span>
@@ -42,14 +42,14 @@ const XMLNode: React.FC<XMLNodeProps> = ({
         style={{ height: 200, width: 400 }}
       />
       <br />
-      <label htmlFor='element'>Подписываемый элемент XML:</label>
-      <input type='text' id='element' onChange={onElementChange} />
+      <label htmlFor="element">Подписываемый элемент XML:</label>
+      <input type="text" id="element" onChange={onElementChange} />
       <br />
-      <label htmlFor='attr'>Имя атрибута идентификации элемента XML:</label>
-      <input type='text' id='attr' onChange={onIdAttrChange} />
+      <label htmlFor="attr">Имя атрибута идентификации элемента XML:</label>
+      <input type="text" id="attr" onChange={onIdAttrChange} />
       <br />
-      <label htmlFor='parent'>Верхний элемент для подписи:</label>
-      <input type='text' id='parent' onChange={onParentElementChange} />
+      <label htmlFor="parent">Верхний элемент для подписи:</label>
+      <input type="text" id="parent" onChange={onParentElementChange} />
       <br />
       <button onClick={onClick}>Подпиcать данные</button>
       <br />
@@ -60,11 +60,11 @@ const XMLNode: React.FC<XMLNodeProps> = ({
       <textarea readOnly value={signed} />
       <SignatureCheck verified={valid} message={message} />
       <br />
-      <label htmlFor='v-attr'>Имя атрибута идентификации элемента XML:</label>
-      <input type='text' id='v-attr' onChange={onVerifyIdAttrChange} />
+      <label htmlFor="v-attr">Имя атрибута идентификации элемента XML:</label>
+      <input type="text" id="v-attr" onChange={onVerifyIdAttrChange} />
       <br />
-      <label htmlFor='v-parent'>Верхний элемент для подписи:</label>
-      <input type='text' id='v-parent' onChange={onVerifyParentElementChange} />
+      <label htmlFor="v-parent">Верхний элемент для подписи:</label>
+      <input type="text" id="v-parent" onChange={onVerifyParentElementChange} />
       <br />
       <button onClick={onVerify}>Проверить данные</button>
     </div>

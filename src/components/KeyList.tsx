@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface KeyListProps {
   keys: string[]
@@ -8,7 +8,7 @@ interface KeyListProps {
 
 const KeyList: React.FC<KeyListProps> = ({ keys, onChange, onClick }) => {
   return (
-    <div className='KeyList'>
+    <div className="KeyList">
       <span>Список ключей:</span>
       <br />
       <select onChange={onChange}>

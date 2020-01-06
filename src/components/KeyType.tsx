@@ -1,5 +1,5 @@
-import React from 'react'
-import Radio from './Fields/Radio'
+import React from "react"
+import Radio from "./Fields/Radio"
 
 interface KeyTypeProps {
   selected: string
@@ -8,29 +8,29 @@ interface KeyTypeProps {
 
 const options = [
   {
-    value: 'SIGN',
-    text: 'Для подписи',
+    value: "SIGN",
+    text: "Для подписи",
   },
   {
-    value: 'AUTH',
-    text: 'Для аутентификаций',
+    value: "AUTH",
+    text: "Для аутентификаций",
   },
   {
-    value: 'ALL',
-    text: 'Любой',
+    value: "ALL",
+    text: "Любой",
   },
 ]
 
 const KeyType: React.FC<KeyTypeProps> = ({ selected, onChange }) => {
   return (
-    <div className='KeyType'>
+    <div className="KeyType">
       <span>Тип ключа:</span>
       <br />
       {options.map(item => {
         return (
           <Radio
             key={item.value}
-            name='keyType'
+            name="keyType"
             value={item.value}
             onChange={onChange}
             checked={selected === item.value}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface StatusProps {
   ready: boolean
@@ -7,9 +7,9 @@ interface StatusProps {
 
 const Status: React.FC<StatusProps> = ({ ready, version }) => {
   return (
-    <div className='Status'>
+    <div className="Status">
       <span>
-        Ready: {ready ? 'YES' : 'NO'}, Version: {version}
+        Ready: {ready ? "YES" : "NO"}, Version: {version}
       </span>
     </div>
   )

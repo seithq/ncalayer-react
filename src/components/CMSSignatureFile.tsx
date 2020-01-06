@@ -1,5 +1,5 @@
-import React from 'react'
-import SignatureCheck from './Fields/SignatureCheck'
+import React from "react"
+import SignatureCheck from "./Fields/SignatureCheck"
 
 interface CMSSignatureFileProps {
   filePath: string
@@ -23,20 +23,20 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
   onVerify,
 }) => {
   return (
-    <div className='CMSSignatureFile'>
+    <div className="CMSSignatureFile">
       <span>
-        Введите путь к файлу для подписи{' '}
+        Введите путь к файлу для подписи{" "}
         <strong>(createCMSSignatureFromFile)</strong>
       </span>
       <br />
-      <input type='text' readOnly value={filePath} />
-      <input type='checkbox' onClick={onToggle} /> Включить данные в подпись
+      <input type="text" readOnly value={filePath} />
+      <input type="checkbox" onClick={onToggle} /> Включить данные в подпись
       <br />
       <button onClick={onChoose}>Выбрать файл для подписания</button>
       <button onClick={onClick}>Подпиcать данные</button>
       <br />
       <span>
-        Проверить подписанные данные{' '}
+        Проверить подписанные данные{" "}
         <strong>(verifyCMSSignatureFromFile)</strong>
       </span>
       <br />

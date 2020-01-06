@@ -1,5 +1,5 @@
-import React from 'react'
-import SignatureCheck from './Fields/SignatureCheck'
+import React from "react"
+import SignatureCheck from "./Fields/SignatureCheck"
 
 interface XMLProps {
   defaultXML: string
@@ -21,7 +21,7 @@ const XML: React.FC<XMLProps> = ({
   onVerify,
 }) => {
   return (
-    <div className='XML'>
+    <div className="XML">
       <span>
         XML для подписи <strong>(signXML)</strong>
       </span>

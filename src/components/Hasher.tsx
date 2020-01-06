@@ -1,17 +1,17 @@
-import React from 'react'
+import React from "react"
 
 const options = [
   {
-    value: 'SHA1',
-    text: 'SHA1',
+    value: "SHA1",
+    text: "SHA1",
   },
   {
-    value: 'SHA256',
-    text: 'SHA256',
+    value: "SHA256",
+    text: "SHA256",
   },
   {
-    value: 'GOST34311',
-    text: 'GOST34311',
+    value: "GOST34311",
+    text: "GOST34311",
   },
 ]
 
@@ -31,7 +31,7 @@ const Hasher: React.FC<HasherProps> = ({
   onClick,
 }) => {
   return (
-    <div className='Hasher'>
+    <div className="Hasher">
       <span>
         Получить Хэш данных по указанному алгоритму <strong>(getHash)</strong>
       </span>
@@ -48,7 +48,7 @@ const Hasher: React.FC<HasherProps> = ({
       <br />
       <span>Введите данные для хеширование:</span>
       <br />
-      <input type='text' onChange={onChange} />
+      <input type="text" onChange={onChange} />
       <br />
       <textarea readOnly value={hashed} />
       <br />

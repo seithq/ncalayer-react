@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface Props {
   text: string
@@ -15,12 +15,12 @@ const Radio: React.FC<RadioProps> = ({ text, ...props }) => {
     <>
       <input
         key={props.key}
-        type='radio'
+        type="radio"
         name={props.name}
         value={props.value}
         onChange={props.onChange}
         checked={props.checked}
-      />{' '}
+      />{" "}
       {text}
       <br />
     </>

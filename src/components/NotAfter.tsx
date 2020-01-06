@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface NotAfterProps {
   value: string
@@ -7,12 +7,12 @@ interface NotAfterProps {
 
 const NotAfter: React.FC<NotAfterProps> = ({ value, onClick }) => {
   return (
-    <div className='NotAfter'>
+    <div className="NotAfter">
       <span>
         Время исхода действия сертификата <strong>(getNotAfter)</strong>
       </span>
       <br />
-      <input type='text' readOnly value={value} />
+      <input type="text" readOnly value={value} />
       <button onClick={onClick}>Узнать</button>
     </div>
   )

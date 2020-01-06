@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface PasswordProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -6,10 +6,10 @@ interface PasswordProps {
 
 const Password: React.FC<PasswordProps> = ({ onChange }) => {
   return (
-    <div className='Password'>
+    <div className="Password">
       <span>Пароль для хранилища:</span>
       <br />
-      <input type='password' onChange={onChange} />
+      <input type="password" onChange={onChange} />
     </div>
   )
 }

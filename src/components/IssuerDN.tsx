@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface IssuerDNProps {
   value: string
@@ -7,7 +7,7 @@ interface IssuerDNProps {
 
 const IssuerDN: React.FC<IssuerDNProps> = ({ value, onClick }) => {
   return (
-    <div className='IssuerDN'>
+    <div className="IssuerDN">
       <span>
         Данные Удостоверяющего центра <strong>(getIssuerDN)</strong>
       </span>

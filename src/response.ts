@@ -1,13 +1,13 @@
-import { isNone, isNullOrEmpty } from './helper'
+import { isNone, isNullOrEmpty } from "./helper"
 
 export enum ValidationType {
-  Common = 'common',
-  Password = 'password',
-  PasswordAttemps = 'passwordAttempts',
-  KeyType = 'keyType',
-  RDN = 'rdn',
-  XML = 'xml',
-  Signature = 'signature',
+  Common = "common",
+  Password = "password",
+  PasswordAttemps = "passwordAttempts",
+  KeyType = "keyType",
+  RDN = "rdn",
+  XML = "xml",
+  Signature = "signature",
 }
 
 export default class Response {
@@ -42,30 +42,30 @@ export default class Response {
   }
 
   public IsWrongPassword(): boolean {
-    return this.errorCode === 'WRONG_PASSWORD'
+    return this.errorCode === "WRONG_PASSWORD"
   }
 
   public IsWrongKeyType(): boolean {
-    return this.errorCode === 'EMPTY_KEY_LIST'
+    return this.errorCode === "EMPTY_KEY_LIST"
   }
 
   public IsRDNNotFound(): boolean {
-    return this.errorCode === 'RDN_NOT_FOUND'
+    return this.errorCode === "RDN_NOT_FOUND"
   }
 
   public IsWrongXml(): boolean {
-    return this.errorCode === 'XML_PARSE_EXCEPTION'
+    return this.errorCode === "XML_PARSE_EXCEPTION"
   }
 
   public IsWrongSignature(): boolean {
-    return this.errorCode === 'SIGNATURE_VALIDATION_ERROR'
+    return this.errorCode === "SIGNATURE_VALIDATION_ERROR"
   }
 
   public HandleError(type: ValidationType): void {
     if (type === ValidationType.PasswordAttemps) {
       if (this.IsWrongPasswordWithAttempts()) {
         alert(
-          'Неправильный пароль! Количество оставшихся попыток: ' +
+          "Неправильный пароль! Количество оставшихся попыток: " +
             this.GetResult()
         )
         return
@@ -74,39 +74,39 @@ export default class Response {
 
     if (type === ValidationType.Password) {
       if (this.IsWrongPassword()) {
-        alert('Неправильный пароль!')
+        alert("Неправильный пароль!")
         return
       }
     }
 
     if (type === ValidationType.KeyType) {
       if (this.IsWrongKeyType()) {
-        alert('Ключи не найдены. Попробуйте выбрать другой тип ключа')
+        alert("Ключи не найдены. Попробуйте выбрать другой тип ключа")
         return
       }
     }
 
     if (type === ValidationType.RDN) {
       if (this.IsRDNNotFound()) {
-        alert('Ключ не содержит данный параметр')
+        alert("Ключ не содержит данный параметр")
         return
       }
     }
 
     if (type === ValidationType.XML) {
       if (this.IsWrongXml()) {
-        alert('Невалидный формат XML')
+        alert("Невалидный формат XML")
         return
       }
     }
 
     if (type === ValidationType.Signature) {
       if (this.IsWrongSignature()) {
-        alert('Ошибка валидации XML')
+        alert("Ошибка валидации XML")
         return
       }
     }
 
-    alert('Ошибка: ' + this.GetErrorCode())
+    alert("Ошибка: " + this.GetErrorCode())
   }
 }

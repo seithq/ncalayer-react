@@ -1,5 +1,5 @@
-import React from 'react'
-import SignatureCheck from './Fields/SignatureCheck'
+import React from "react"
+import SignatureCheck from "./Fields/SignatureCheck"
 
 interface CMSSignatureProps {
   signed: string
@@ -21,13 +21,13 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
   onVerify,
 }) => {
   return (
-    <div className='CMSSignature'>
+    <div className="CMSSignature">
       <span>
         Введите данные для подписи <strong>(createCMSSignature)</strong>
       </span>
       <br />
-      <input type='text' onChange={onChange} />
-      <input type='checkbox' onClick={onToggle} /> Включить данные в подпись
+      <input type="text" onChange={onChange} />
+      <input type="checkbox" onClick={onToggle} /> Включить данные в подпись
       <br />
       <button onClick={onClick}>Подпиcать данные</button>
       <br />

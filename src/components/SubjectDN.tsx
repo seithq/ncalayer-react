@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface SubjectDNProps {
   value: string
@@ -7,7 +7,7 @@ interface SubjectDNProps {
 
 const SubjectDN: React.FC<SubjectDNProps> = ({ value, onClick }) => {
   return (
-    <div className='SubjectDN'>
+    <div className="SubjectDN">
       <span>
         Данные субъекта <strong>(getSubjectDN)</strong>
       </span>

@@ -1,5 +1,5 @@
-import React from 'react'
-import SignatureCheck from './Fields/SignatureCheck'
+import React from "react"
+import SignatureCheck from "./Fields/SignatureCheck"
 
 interface PlainDataProps {
   signed: string
@@ -19,12 +19,12 @@ const PlainData: React.FC<PlainDataProps> = ({
   onVerify,
 }) => {
   return (
-    <div className='PlainData'>
+    <div className="PlainData">
       <span>
         Введите данные для подписи <strong>(signPlainData)</strong>
       </span>
       <br />
-      <input type='text' onChange={onChange} />
+      <input type="text" onChange={onChange} />
       <button onClick={onClick}>Подпиcать данные</button>
       <br />
       <span>

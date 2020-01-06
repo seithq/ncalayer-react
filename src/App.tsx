@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react'
-import NCALayer, { MethodName } from './ncalayer'
-import Response, { ValidationType } from './response'
-import { isNone, isNullOrEmpty, extractKeyAlias, checkInputs } from './helper'
-import Error from './components/Error'
-import Status from './components/Status'
-import StorageAlias from './components/StorageAlias'
-import StoragePath from './components/StoragePath'
-import Password from './components/Password'
-import KeyType from './components/KeyType'
-import KeyList from './components/KeyList'
-import Locale from './components/Locale'
-import NotBefore from './components/NotBefore'
-import NotAfter from './components/NotAfter'
-import SubjectDN from './components/SubjectDN'
-import IssuerDN from './components/IssuerDN'
-import RDNSelector from './components/RDNSelector'
-import PlainData from './components/PlainData'
-import CMSSignature from './components/CMSSignature'
-import CMSSignatureFile from './components/CMSSignatureFile'
-import XML from './components/XML'
-import XMLNode from './components/XMLNode'
-import Hasher from './components/Hasher'
+import React, { useState, useEffect, useRef } from "react"
+import NCALayer, { MethodName } from "./ncalayer"
+import Response, { ValidationType } from "./response"
+import { isNone, isNullOrEmpty, extractKeyAlias, checkInputs } from "./helper"
+import Error from "./components/Error"
+import Status from "./components/Status"
+import StorageAlias from "./components/StorageAlias"
+import StoragePath from "./components/StoragePath"
+import Password from "./components/Password"
+import KeyType from "./components/KeyType"
+import KeyList from "./components/KeyList"
+import Locale from "./components/Locale"
+import NotBefore from "./components/NotBefore"
+import NotAfter from "./components/NotAfter"
+import SubjectDN from "./components/SubjectDN"
+import IssuerDN from "./components/IssuerDN"
+import RDNSelector from "./components/RDNSelector"
+import PlainData from "./components/PlainData"
+import CMSSignature from "./components/CMSSignature"
+import CMSSignatureFile from "./components/CMSSignatureFile"
+import XML from "./components/XML"
+import XMLNode from "./components/XMLNode"
+import Hasher from "./components/Hasher"
 
 const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
                 <root>
@@ -52,76 +52,76 @@ const App: React.FC = () => {
 
   // input state
   const [state, setState] = useState({
-    version: '',
-    alias: 'NONE',
-    path: '',
-    password: '',
-    keyType: 'ALL',
-    keyAlias: '',
-    keys: [''],
-    lang: 'ru',
-    notBefore: '',
-    notAfter: '',
-    subjectDN: '',
-    issuerDN: '',
-    oid: '2.5.4.3',
-    rdn: '',
+    version: "",
+    alias: "NONE",
+    path: "",
+    password: "",
+    keyType: "ALL",
+    keyAlias: "",
+    keys: [""],
+    lang: "ru",
+    notBefore: "",
+    notAfter: "",
+    subjectDN: "",
+    issuerDN: "",
+    oid: "2.5.4.3",
+    rdn: "",
     // plain data
-    plainData: '',
-    plainDataSigned: '',
+    plainData: "",
+    plainDataSigned: "",
     plainDataValid: false,
-    plainDataMessage: 'Не проверено',
+    plainDataMessage: "Не проверено",
     // cms signature
-    cmsSignature: '',
+    cmsSignature: "",
     cmsSignatureFlag: false,
-    cmsSignatureSigned: '',
+    cmsSignatureSigned: "",
     cmsSignatureValid: false,
-    cmsSignatureMessage: 'Не проверено',
+    cmsSignatureMessage: "Не проверено",
     // cms signature form file
-    cmsFilePath: '',
+    cmsFilePath: "",
     cmsFileSignatureFlag: false,
-    cmsFileSignatureSigned: '',
+    cmsFileSignatureSigned: "",
     cmsFileSignatureValid: false,
-    cmsFileSignatureMessage: 'Не проверено',
+    cmsFileSignatureMessage: "Не проверено",
     // xml
     xml: defaultXML,
-    xmlSigned: '',
+    xmlSigned: "",
     xmlValid: false,
-    xmlMessage: 'Не проверено',
+    xmlMessage: "Не проверено",
     // xml by element id
     xmlNode: defaultXMLByElementId,
-    xmlNodeElement: '',
-    xmlNodeAttribute: '',
-    xmlNodeParent: '',
-    xmlNodeVerifyAttribute: '',
-    xmlNodeVerifyParent: '',
-    xmlNodeSigned: '',
+    xmlNodeElement: "",
+    xmlNodeAttribute: "",
+    xmlNodeParent: "",
+    xmlNodeVerifyAttribute: "",
+    xmlNodeVerifyParent: "",
+    xmlNodeSigned: "",
     xmlNodeValid: false,
-    xmlNodeMessage: 'Не проверено',
+    xmlNodeMessage: "Не проверено",
     // hash
-    toHash: '',
-    alg: 'SHA1',
-    hashed: '',
+    toHash: "",
+    alg: "SHA1",
+    hashed: "",
   })
 
   // setup ws
   useEffect(() => {
-    ws.current = new WebSocket('wss://127.0.0.1:13579/')
+    ws.current = new WebSocket("wss://127.0.0.1:13579/")
 
     ws.current.onopen = e => {
       // tslint:disable-next-line
-      console.log('connection opened')
+      console.log("connection opened")
       setReady(true)
     }
 
     ws.current.onclose = e => {
       if (e.wasClean) {
         // tslint:disable-next-line
-        console.log('connection closed')
+        console.log("connection closed")
       } else {
         // tslint:disable-next-line
         console.log(
-          'connection error: [code]=' + e.code + ', [reason]=' + e.reason
+          "connection error: [code]=" + e.code + ", [reason]=" + e.reason
         )
       }
       setReady(false)
@@ -151,7 +151,7 @@ const App: React.FC = () => {
         const k: string[] = []
         resp
           .GetResult()
-          .split('\n')
+          .split("\n")
           .forEach(el => {
             if (isNullOrEmpty(el)) {
               return
@@ -161,13 +161,13 @@ const App: React.FC = () => {
         setState({
           ...state,
           keys: k,
-          keyAlias: k.length > 0 ? extractKeyAlias(k[0]) : '',
+          keyAlias: k.length > 0 ? extractKeyAlias(k[0]) : "",
         })
 
         return
       }
 
-      setState({ ...state, keys: [], keyAlias: '' })
+      setState({ ...state, keys: [], keyAlias: "" })
       resp.HandleError(
         ValidationType.Password &&
           ValidationType.PasswordAttemps &&
@@ -248,7 +248,7 @@ const App: React.FC = () => {
           setState({
             ...state,
             plainDataValid: false,
-            plainDataMessage: 'Неправильная подпись',
+            plainDataMessage: "Неправильная подпись",
           })
           return
         }
@@ -256,7 +256,7 @@ const App: React.FC = () => {
         setState({
           ...state,
           plainDataValid: true,
-          plainDataMessage: 'Валидная подпись',
+          plainDataMessage: "Валидная подпись",
         })
         return
       }
@@ -283,7 +283,7 @@ const App: React.FC = () => {
           setState({
             ...state,
             cmsSignatureValid: false,
-            cmsSignatureMessage: 'Неправильная подпись',
+            cmsSignatureMessage: "Неправильная подпись",
           })
           return
         }
@@ -291,7 +291,7 @@ const App: React.FC = () => {
         setState({
           ...state,
           cmsSignatureValid: true,
-          cmsSignatureMessage: 'Валидная подпись',
+          cmsSignatureMessage: "Валидная подпись",
         })
         return
       }
@@ -318,7 +318,7 @@ const App: React.FC = () => {
           setState({
             ...state,
             cmsFileSignatureValid: false,
-            cmsFileSignatureMessage: 'Неправильная подпись',
+            cmsFileSignatureMessage: "Неправильная подпись",
           })
           return
         }
@@ -326,7 +326,7 @@ const App: React.FC = () => {
         setState({
           ...state,
           cmsFileSignatureValid: true,
-          cmsFileSignatureMessage: 'Валидная подпись',
+          cmsFileSignatureMessage: "Валидная подпись",
         })
         return
       }
@@ -353,7 +353,7 @@ const App: React.FC = () => {
           setState({
             ...state,
             xmlValid: false,
-            xmlMessage: 'Неправильная подпись',
+            xmlMessage: "Неправильная подпись",
           })
           return
         }
@@ -361,7 +361,7 @@ const App: React.FC = () => {
         setState({
           ...state,
           xmlValid: true,
-          xmlMessage: 'Валидная подпись',
+          xmlMessage: "Валидная подпись",
         })
         return
       }
@@ -388,7 +388,7 @@ const App: React.FC = () => {
           setState({
             ...state,
             xmlNodeValid: false,
-            xmlNodeMessage: 'Неправильная подпись',
+            xmlNodeMessage: "Неправильная подпись",
           })
           return
         }
@@ -396,7 +396,7 @@ const App: React.FC = () => {
         setState({
           ...state,
           xmlNodeValid: true,
-          xmlNodeMessage: 'Валидная подпись',
+          xmlNodeMessage: "Валидная подпись",
         })
         return
       }
@@ -418,7 +418,7 @@ const App: React.FC = () => {
     }
 
     ws.current!.onmessage = e => {
-      if (e.data === '--heartbeat--') {
+      if (e.data === "--heartbeat--") {
         return
       }
 
@@ -508,7 +508,7 @@ const App: React.FC = () => {
   const handleAliasChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (!isNone(e.target.value)) {
       setState({ ...state, alias: e.target.value })
-      setMethod(client.BrowseKeyStore(e.target.value, 'P12', state.path))
+      setMethod(client.BrowseKeyStore(e.target.value, "P12", state.path))
     }
   }
 
@@ -677,7 +677,7 @@ const App: React.FC = () => {
       setState({
         ...state,
         plainDataValid: false,
-        plainDataMessage: 'Не проверено',
+        plainDataMessage: "Не проверено",
       })
       setMethod(
         client.SignPlainData(
@@ -737,7 +737,7 @@ const App: React.FC = () => {
       setState({
         ...state,
         cmsSignatureValid: false,
-        cmsSignatureMessage: 'Не проверено',
+        cmsSignatureMessage: "Не проверено",
       })
       setMethod(
         client.CreateCMSSignature(
@@ -771,7 +771,7 @@ const App: React.FC = () => {
   const handleCMSSignatureFromFileChoose = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setMethod(client.ShowFileChooser('ALL', ''))
+    setMethod(client.ShowFileChooser("ALL", ""))
   }
 
   const handleCMSSignatureFromFileToggle = (
@@ -793,7 +793,7 @@ const App: React.FC = () => {
       setState({
         ...state,
         cmsFileSignatureValid: false,
-        cmsFileSignatureMessage: 'Не проверено',
+        cmsFileSignatureMessage: "Не проверено",
       })
       setMethod(
         client.CreateCMSSignatureFromFile(
@@ -844,7 +844,7 @@ const App: React.FC = () => {
       setState({
         ...state,
         xmlValid: false,
-        xmlMessage: 'Не проверено',
+        xmlMessage: "Не проверено",
       })
       setMethod(
         client.SignXml(
@@ -909,7 +909,7 @@ const App: React.FC = () => {
       setState({
         ...state,
         xmlNodeValid: false,
-        xmlNodeMessage: 'Не проверено',
+        xmlNodeMessage: "Не проверено",
       })
       setMethod(
         client.SignXmlByElementId(
@@ -966,7 +966,9 @@ const App: React.FC = () => {
     setState({ ...state, toHash: e.target.value })
   }
 
-  const handleHashClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleHashClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     setMethod(client.GetHash(state.toHash, state.alg))
   }
 
@@ -975,7 +977,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className='App'>
+    <div className="App">
       <Status ready={ready} version={state.version} />
       <StorageAlias selected={state.alias} onChange={handleAliasChange} />
       <StoragePath path={state.path} />
