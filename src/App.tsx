@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
+import AppState, { initAppState } from "./state"
 import NCALayer, { MethodName } from "./ncalayer"
 import Response, { ValidationType } from "./response"
 import { isNone, isNullOrEmpty, extractKeyAlias, checkInputs } from "./helper"
@@ -22,26 +23,6 @@ import XML from "./components/XML"
 import XMLNode from "./components/XMLNode"
 import Hasher from "./components/Hasher"
 
-const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
-                <root>
-                    <name>Ivan</name>
-                    <iin>123456789012</iin>
-                </root>
-`
-
-const defaultXMLByElementId = `<?xml version="1.0" encoding="utf-8"?>
-                <root>
-                    <person id="personId">
-                        <name>Ivan</name>
-                        <iin>123456789012</iin>
-                    </person>
-                    <company id="companyId">
-                        <name>Company Name</name>
-                        <bin>123456789012</bin>
-                    </company>
-                </root>
-`
-
 const App: React.FC = () => {
   // refs
   const ws = useRef<WebSocket>()
@@ -51,58 +32,7 @@ const App: React.FC = () => {
   const [method, setMethod] = useState<MethodName>(MethodName.None)
 
   // input state
-  const [state, setState] = useState({
-    version: "",
-    alias: "NONE",
-    path: "",
-    password: "",
-    keyType: "ALL",
-    keyAlias: "",
-    keys: [""],
-    lang: "ru",
-    notBefore: "",
-    notAfter: "",
-    subjectDN: "",
-    issuerDN: "",
-    oid: "2.5.4.3",
-    rdn: "",
-    // plain data
-    plainData: "",
-    plainDataSigned: "",
-    plainDataValid: false,
-    plainDataMessage: "Не проверено",
-    // cms signature
-    cmsSignature: "",
-    cmsSignatureFlag: false,
-    cmsSignatureSigned: "",
-    cmsSignatureValid: false,
-    cmsSignatureMessage: "Не проверено",
-    // cms signature form file
-    cmsFilePath: "",
-    cmsFileSignatureFlag: false,
-    cmsFileSignatureSigned: "",
-    cmsFileSignatureValid: false,
-    cmsFileSignatureMessage: "Не проверено",
-    // xml
-    xml: defaultXML,
-    xmlSigned: "",
-    xmlValid: false,
-    xmlMessage: "Не проверено",
-    // xml by element id
-    xmlNode: defaultXMLByElementId,
-    xmlNodeElement: "",
-    xmlNodeAttribute: "",
-    xmlNodeParent: "",
-    xmlNodeVerifyAttribute: "",
-    xmlNodeVerifyParent: "",
-    xmlNodeSigned: "",
-    xmlNodeValid: false,
-    xmlNodeMessage: "Не проверено",
-    // hash
-    toHash: "",
-    alg: "SHA1",
-    hashed: "",
-  })
+  const [state, setState] = useState<AppState>(initAppState())
 
   // setup ws
   useEffect(() => {
