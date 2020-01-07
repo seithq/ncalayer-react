@@ -4,7 +4,6 @@ import NCALayer, { MethodName } from "./ncalayer"
 import Response, { ValidationType } from "./response"
 import { isNullOrEmpty, extractKeyAlias } from "./helper"
 import Layout from "./components/Layout"
-import Status from "./components/Status"
 import StorageAlias from "./components/StorageAlias"
 import StoragePath from "./components/StoragePath"
 import Password from "./components/Password"
@@ -436,8 +435,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <Layout ready={ready}>
-        <Status ready={ready} version={state.version} />
+      <Layout ready={ready} state={state}>
         <StorageAlias client={client} state={state} setState={setState} />
         <StoragePath path={state.path} />
         <Password state={state} setState={setState} />
@@ -455,7 +453,6 @@ const App: React.FC = () => {
         <XML client={client} state={state} setState={setState} />
         <XMLNode client={client} state={state} setState={setState} />
         <Hasher client={client} state={state} setState={setState} />
-        <pre>{JSON.stringify(state, null, 2)}</pre>
       </Layout>
     </div>
   )
