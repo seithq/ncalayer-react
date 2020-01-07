@@ -1,3 +1,5 @@
+import { MethodName } from "./ncalayer"
+
 const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
                 <root>
                     <name>Ivan</name>
@@ -19,6 +21,7 @@ const defaultXMLByElementId = `<?xml version="1.0" encoding="utf-8"?>
 `
 
 interface AppState {
+  method: MethodName
   version: ""
   alias: string
   path: string
@@ -73,6 +76,7 @@ interface AppState {
 
 export const initAppState = (): AppState => {
   return {
+    method: MethodName.None,
     version: "",
     alias: "NONE",
     path: "",

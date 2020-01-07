@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import AppState, { initAppState } from "./state"
 import NCALayer, { MethodName } from "./ncalayer"
 import Response, { ValidationType } from "./response"
-import { isNone, isNullOrEmpty, extractKeyAlias, checkInputs } from "./helper"
+import { isNullOrEmpty, extractKeyAlias, checkInputs } from "./helper"
 import Error from "./components/Error"
 import Status from "./components/Status"
 import StorageAlias from "./components/StorageAlias"
@@ -29,7 +29,7 @@ const App: React.FC = () => {
 
   // state
   const [ready, setReady] = useState(false)
-  const [method, setMethod] = useState<MethodName>(MethodName.None)
+  // const [method, setMethod] = useState<MethodName>(MethodName.None)
 
   // input state
   const [state, setState] = useState<AppState>(initAppState())
@@ -360,7 +360,7 @@ const App: React.FC = () => {
           data.errorCode
         )
 
-        switch (method) {
+        switch (state.method) {
           case MethodName.BrowseKeyStore:
             browseKeyStoreCallback(resp)
             break
@@ -429,18 +429,12 @@ const App: React.FC = () => {
         }
       }
     }
-  }, [method, state, setState])
+  }, [state, setState])
 
   // NCALayer client
   const client = new NCALayer(ws.current!)
 
   // handlers
-  const handleAliasChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!isNone(e.target.value)) {
-      setState({ ...state, alias: e.target.value })
-      setMethod(client.BrowseKeyStore(e.target.value, "P12", state.path))
-    }
-  }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState({ ...state, password: e.target.value })
@@ -463,9 +457,15 @@ const App: React.FC = () => {
       password: state.password,
     })
     if (ok) {
-      setMethod(
-        client.GetKeys(state.alias, state.path, state.password, state.keyType)
-      )
+      setState({
+        ...state,
+        method: client.GetKeys(
+          state.alias,
+          state.path,
+          state.password,
+          state.keyType
+        ),
+      })
     }
   }
 
@@ -476,7 +476,7 @@ const App: React.FC = () => {
   const handleLangClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setMethod(client.SetLocale(state.lang))
+    setState({ ...state, method: client.SetLocale(state.lang) })
   }
 
   const handleNotBeforeClick = (
@@ -489,14 +489,15 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.GetNotBefore(
+      setState({
+        ...state,
+        method: client.GetNotBefore(
           state.alias,
           state.path,
           state.keyAlias,
           state.password
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -510,14 +511,15 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.GetNotAfter(
+      setState({
+        ...state,
+        method: client.GetNotAfter(
           state.alias,
           state.path,
           state.keyAlias,
           state.password
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -531,14 +533,15 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.GetSubjectDN(
+      setState({
+        ...state,
+        method: client.GetSubjectDN(
           state.alias,
           state.path,
           state.keyAlias,
           state.password
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -552,14 +555,15 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.GetIssuerDN(
+      setState({
+        ...state,
+        method: client.GetIssuerDN(
           state.alias,
           state.path,
           state.keyAlias,
           state.password
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -577,16 +581,17 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.GetRdnByOid(
+      setState({
+        ...state,
+        method: client.GetRdnByOid(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
           state.oid,
           0
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -608,16 +613,14 @@ const App: React.FC = () => {
         ...state,
         plainDataValid: false,
         plainDataMessage: "Не проверено",
-      })
-      setMethod(
-        client.SignPlainData(
+        method: client.SignPlainData(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
           state.plainData
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -631,16 +634,17 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.VerifyPlainData(
+      setState({
+        ...state,
+        method: client.VerifyPlainData(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
           state.plainData,
           state.plainDataSigned
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -668,17 +672,15 @@ const App: React.FC = () => {
         ...state,
         cmsSignatureValid: false,
         cmsSignatureMessage: "Не проверено",
-      })
-      setMethod(
-        client.CreateCMSSignature(
+        method: client.CreateCMSSignature(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
           state.cmsSignature,
           state.cmsSignatureFlag
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -692,16 +694,20 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.VerifyCMSSignature(state.cmsSignatureSigned, state.cmsSignature)
-      )
+      setState({
+        ...state,
+        method: client.VerifyCMSSignature(
+          state.cmsSignatureSigned,
+          state.cmsSignature
+        ),
+      })
     }
   }
 
   const handleCMSSignatureFromFileChoose = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setMethod(client.ShowFileChooser("ALL", ""))
+    setState({ ...state, method: client.ShowFileChooser("ALL", "") })
   }
 
   const handleCMSSignatureFromFileToggle = (
@@ -724,17 +730,15 @@ const App: React.FC = () => {
         ...state,
         cmsFileSignatureValid: false,
         cmsFileSignatureMessage: "Не проверено",
-      })
-      setMethod(
-        client.CreateCMSSignatureFromFile(
+        method: client.CreateCMSSignatureFromFile(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
           state.cmsFilePath,
           state.cmsFileSignatureFlag
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -748,12 +752,13 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.VerifyCMSSignatureFromFile(
+      setState({
+        ...state,
+        method: client.VerifyCMSSignatureFromFile(
           state.cmsFileSignatureSigned,
           state.cmsFilePath
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -775,16 +780,14 @@ const App: React.FC = () => {
         ...state,
         xmlValid: false,
         xmlMessage: "Не проверено",
-      })
-      setMethod(
-        client.SignXml(
+        method: client.SignXml(
           state.alias,
           state.path,
           state.keyAlias,
           state.password,
           state.xml
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -798,7 +801,7 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(client.VerifyXml(state.xmlSigned))
+      setState({ ...state, method: client.VerifyXml(state.xmlSigned) })
     }
   }
 
@@ -840,9 +843,7 @@ const App: React.FC = () => {
         ...state,
         xmlNodeValid: false,
         xmlNodeMessage: "Не проверено",
-      })
-      setMethod(
-        client.SignXmlByElementId(
+        method: client.SignXmlByElementId(
           state.alias,
           state.path,
           state.keyAlias,
@@ -851,8 +852,8 @@ const App: React.FC = () => {
           state.xmlNodeElement,
           state.xmlNodeAttribute,
           state.xmlNodeParent
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -878,13 +879,14 @@ const App: React.FC = () => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setMethod(
-        client.VerifyXmlByElementId(
+      setState({
+        ...state,
+        method: client.VerifyXmlByElementId(
           state.xmlNodeSigned,
           state.xmlNodeVerifyAttribute,
           state.xmlNodeVerifyParent
-        )
-      )
+        ),
+      })
     }
   }
 
@@ -899,7 +901,7 @@ const App: React.FC = () => {
   const handleHashClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setMethod(client.GetHash(state.toHash, state.alg))
+    setState({ ...state, method: client.GetHash(state.toHash, state.alg) })
   }
 
   if (!ready) {
@@ -909,7 +911,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <Status ready={ready} version={state.version} />
-      <StorageAlias selected={state.alias} onChange={handleAliasChange} />
+      <StorageAlias client={client} state={state} setState={setState} />
       <StoragePath path={state.path} />
       <Password onChange={handlePasswordChange} />
       <KeyType selected={state.keyType} onChange={handleKeyTypeChange} />
