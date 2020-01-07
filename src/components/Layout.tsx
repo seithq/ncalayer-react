@@ -13,7 +13,7 @@ const Layout: React.FC<LayoutProps> = ({ state, ready, children }) => {
     return <Error />
   }
   return (
-    <div className="bg-gray-200 h-full py-8">
+    <div className="bg-gray-300 h-full py-8">
       <div
         className={`
         container mx-auto rounded shadow-2xl

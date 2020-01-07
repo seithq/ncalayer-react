@@ -21,6 +21,7 @@ import CMSSignatureFile from "./components/CMSSignatureFile"
 import XML from "./components/XML"
 import XMLNode from "./components/XMLNode"
 import Hasher from "./components/Hasher"
+import Box from "./components/Fields/Box"
 
 const App: React.FC = () => {
   // refs
@@ -436,23 +437,45 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <Layout ready={ready} state={state}>
-        <StorageAlias client={client} state={state} setState={setState} />
-        <StoragePath path={state.path} />
-        <Password state={state} setState={setState} />
-        <KeyType state={state} setState={setState} />
-        <KeyList client={client} state={state} setState={setState} />
-        <Locale client={client} state={state} setState={setState} />
-        <NotBefore client={client} state={state} setState={setState} />
-        <NotAfter client={client} state={state} setState={setState} />
-        <SubjectDN client={client} state={state} setState={setState} />
-        <IssuerDN client={client} state={state} setState={setState} />
-        <RDNSelector client={client} state={state} setState={setState} />
-        <PlainData client={client} state={state} setState={setState} />
-        <CMSSignature client={client} state={state} setState={setState} />
-        <CMSSignatureFile client={client} state={state} setState={setState} />
-        <XML client={client} state={state} setState={setState} />
-        <XMLNode client={client} state={state} setState={setState} />
-        <Hasher client={client} state={state} setState={setState} />
+        <Box>
+          <StorageAlias client={client} state={state} setState={setState} />
+          <StoragePath path={state.path} />
+          <Password state={state} setState={setState} />
+          <KeyType state={state} setState={setState} />
+          <KeyList client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <Locale client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <NotBefore client={client} state={state} setState={setState} />
+          <NotAfter client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <SubjectDN client={client} state={state} setState={setState} />
+          <IssuerDN client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <RDNSelector client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <PlainData client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <CMSSignature client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <CMSSignatureFile client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <XML client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <XMLNode client={client} state={state} setState={setState} />
+        </Box>
+        <Box>
+          <Hasher client={client} state={state} setState={setState} />
+        </Box>
       </Layout>
     </div>
   )
