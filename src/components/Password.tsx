@@ -1,15 +1,21 @@
 import React from "react"
+import AppState from "../state"
 
 interface PasswordProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
 }
 
-const Password: React.FC<PasswordProps> = ({ onChange }) => {
+const Password: React.FC<PasswordProps> = ({ state, setState }) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, password: e.target.value })
+  }
+
   return (
     <div className="Password">
       <span>Пароль для хранилища:</span>
       <br />
-      <input type="password" onChange={onChange} />
+      <input type="password" onChange={handlePasswordChange} />
     </div>
   )
 }

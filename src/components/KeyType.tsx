@@ -1,9 +1,10 @@
 import React from "react"
+import AppState from "../state"
 import Radio from "./Fields/Radio"
 
 interface KeyTypeProps {
-  selected: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
 }
 
 const options = [
@@ -21,7 +22,11 @@ const options = [
   },
 ]
 
-const KeyType: React.FC<KeyTypeProps> = ({ selected, onChange }) => {
+const KeyType: React.FC<KeyTypeProps> = ({ state, setState }) => {
+  const handleKeyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, keyType: e.target.value })
+  }
+
   return (
     <div className="KeyType">
       <span>Тип ключа:</span>
@@ -32,8 +37,8 @@ const KeyType: React.FC<KeyTypeProps> = ({ selected, onChange }) => {
             key={item.value}
             name="keyType"
             value={item.value}
-            onChange={onChange}
-            checked={selected === item.value}
+            onChange={handleKeyTypeChange}
+            checked={state.keyType === item.value}
             text={item.text}
           />
         )

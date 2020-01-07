@@ -1,25 +1,59 @@
 import React from "react"
+import AppState from "../state"
+import NCALayer from "../ncalayer"
+import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 
 interface XMLProps {
-  defaultXML: string
-  signed: string
-  valid: boolean
-  message: string
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-  onVerify: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  client: NCALayer
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
 }
 
-const XML: React.FC<XMLProps> = ({
-  defaultXML,
-  signed,
-  valid,
-  message,
-  onChange,
-  onClick,
-  onVerify,
-}) => {
+const XML: React.FC<XMLProps> = ({ client, state, setState }) => {
+  const handleXmlChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setState({ ...state, xml: e.target.value })
+  }
+
+  const handleXmlClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        xmlValid: false,
+        xmlMessage: "Не проверено",
+        method: client.SignXml(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.xml
+        ),
+      })
+    }
+  }
+
+  const handleXmlVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({ ...state, method: client.VerifyXml(state.xmlSigned) })
+    }
+  }
+
   return (
     <div className="XML">
       <span>
@@ -27,20 +61,20 @@ const XML: React.FC<XMLProps> = ({
       </span>
       <br />
       <textarea
-        onChange={onChange}
-        defaultValue={defaultXML}
+        onChange={handleXmlChange}
+        defaultValue={state.xml}
         style={{ height: 100, width: 200 }}
       />
-      <button onClick={onClick}>Подпиcать данные</button>
+      <button onClick={handleXmlClick}>Подпиcать данные</button>
       <br />
       <span>
         Проверить подписанный XML <strong>(verifyXml)</strong>
       </span>
       <br />
-      <textarea readOnly value={signed} />
-      <SignatureCheck verified={valid} message={message} />
+      <textarea readOnly value={state.xmlSigned} />
+      <SignatureCheck verified={state.xmlValid} message={state.xmlMessage} />
       <br />
-      <button onClick={onVerify}>Проверить данные</button>
+      <button onClick={handleXmlVerify}>Проверить данные</button>
     </div>
   )
 }

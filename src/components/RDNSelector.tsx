@@ -1,11 +1,13 @@
 import React from "react"
+import AppState from "../state"
+import NCALayer from "../ncalayer"
+import { checkInputs } from "../helper"
 import Radio from "./Fields/Radio"
 
 interface RDNSelectorProps {
-  value: string
-  selected: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  client: NCALayer
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
 }
 
 const options = [
@@ -56,11 +58,38 @@ const options = [
 ]
 
 const RDNSelector: React.FC<RDNSelectorProps> = ({
-  value,
-  selected,
-  onChange,
-  onClick,
+  client,
+  state,
+  setState,
 }) => {
+  const handleOIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, oid: e.target.value })
+  }
+
+  const handleRDNClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        method: client.GetRdnByOid(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.oid,
+          0
+        ),
+      })
+    }
+  }
+
   return (
     <div className="RDN">
       <span>
@@ -73,14 +102,14 @@ const RDNSelector: React.FC<RDNSelectorProps> = ({
             key={item.value}
             name="oid"
             value={item.value}
-            onChange={onChange}
-            checked={selected === item.value}
+            onChange={handleOIDChange}
+            checked={state.oid === item.value}
             text={item.text}
           />
         )
       })}
-      <input type="text" readOnly value={value} />
-      <button onClick={onClick}>Получить RDN по OID</button>
+      <input type="text" readOnly value={state.rdn} />
+      <button onClick={handleRDNClick}>Получить RDN по OID</button>
     </div>
   )
 }

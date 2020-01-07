@@ -1,27 +1,78 @@
 import React from "react"
+import AppState from "../state"
+import NCALayer from "../ncalayer"
+import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 
 interface CMSSignatureFileProps {
-  filePath: string
-  signed: string
-  valid: boolean
-  message: string
-  onChoose: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-  onToggle: (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => void
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-  onVerify: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  client: NCALayer
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
 }
 
 const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
-  filePath,
-  signed,
-  valid,
-  message,
-  onToggle,
-  onChoose,
-  onClick,
-  onVerify,
+  client,
+  state,
+  setState,
 }) => {
+  const handleCMSSignatureFromFileChoose = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setState({ ...state, method: client.ShowFileChooser("ALL", "") })
+  }
+
+  const handleCMSSignatureFromFileToggle = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    setState({ ...state, cmsFileSignatureFlag: e.currentTarget.checked })
+  }
+
+  const handleCMSSignatureFromFileClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        cmsFileSignatureValid: false,
+        cmsFileSignatureMessage: "Не проверено",
+        method: client.CreateCMSSignatureFromFile(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.cmsFilePath,
+          state.cmsFileSignatureFlag
+        ),
+      })
+    }
+  }
+
+  const handleCMSSignatureFromFileVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        method: client.VerifyCMSSignatureFromFile(
+          state.cmsFileSignatureSigned,
+          state.cmsFilePath
+        ),
+      })
+    }
+  }
+
   return (
     <div className="CMSSignatureFile">
       <span>
@@ -29,21 +80,31 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
         <strong>(createCMSSignatureFromFile)</strong>
       </span>
       <br />
-      <input type="text" readOnly value={filePath} />
-      <input type="checkbox" onClick={onToggle} /> Включить данные в подпись
+      <input type="text" readOnly value={state.cmsFilePath} />
+      <input type="checkbox" onClick={handleCMSSignatureFromFileToggle} />{" "}
+      Включить данные в подпись
       <br />
-      <button onClick={onChoose}>Выбрать файл для подписания</button>
-      <button onClick={onClick}>Подпиcать данные</button>
+      <button onClick={handleCMSSignatureFromFileChoose}>
+        Выбрать файл для подписания
+      </button>
+      <button onClick={handleCMSSignatureFromFileClick}>
+        Подпиcать данные
+      </button>
       <br />
       <span>
         Проверить подписанные данные{" "}
         <strong>(verifyCMSSignatureFromFile)</strong>
       </span>
       <br />
-      <textarea readOnly value={signed} />
-      <SignatureCheck verified={valid} message={message} />
+      <textarea readOnly value={state.cmsFileSignatureSigned} />
+      <SignatureCheck
+        verified={state.cmsFileSignatureValid}
+        message={state.cmsFileSignatureMessage}
+      />
       <br />
-      <button onClick={onVerify}>Проверить данные</button>
+      <button onClick={handleCMSSignatureFromFileVerify}>
+        Проверить данные
+      </button>
     </div>
   )
 }

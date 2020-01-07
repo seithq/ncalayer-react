@@ -1,40 +1,89 @@
 import React from "react"
+import AppState from "../state"
+import NCALayer from "../ncalayer"
+import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 
 interface PlainDataProps {
-  signed: string
-  valid: boolean
-  message: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-  onVerify: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  client: NCALayer
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
 }
 
-const PlainData: React.FC<PlainDataProps> = ({
-  signed,
-  valid,
-  message,
-  onChange,
-  onClick,
-  onVerify,
-}) => {
+const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
+  const handlePlainDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, plainData: e.target.value })
+  }
+
+  const handlePlainDataClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        plainDataValid: false,
+        plainDataMessage: "Не проверено",
+        method: client.SignPlainData(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.plainData
+        ),
+      })
+    }
+  }
+
+  const handlePlainDataVerify = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const ok = checkInputs({
+      path: state.path,
+      alias: state.alias,
+      password: state.password,
+      keyAlias: state.keyAlias,
+    })
+    if (ok) {
+      setState({
+        ...state,
+        method: client.VerifyPlainData(
+          state.alias,
+          state.path,
+          state.keyAlias,
+          state.password,
+          state.plainData,
+          state.plainDataSigned
+        ),
+      })
+    }
+  }
+
   return (
     <div className="PlainData">
       <span>
         Введите данные для подписи <strong>(signPlainData)</strong>
       </span>
       <br />
-      <input type="text" onChange={onChange} />
-      <button onClick={onClick}>Подпиcать данные</button>
+      <input type="text" onChange={handlePlainDataChange} />
+      <button onClick={handlePlainDataClick}>Подпиcать данные</button>
       <br />
       <span>
         Проверить подписанные данные <strong>(verifyPlainData)</strong>
       </span>
       <br />
-      <textarea readOnly value={signed} />
-      <SignatureCheck verified={valid} message={message} />
+      <textarea readOnly value={state.plainDataSigned} />
+      <SignatureCheck
+        verified={state.plainDataValid}
+        message={state.plainDataMessage}
+      />
       <br />
-      <button onClick={onVerify}>Проверить данные</button>
+      <button onClick={handlePlainDataVerify}>Проверить данные</button>
     </div>
   )
 }
