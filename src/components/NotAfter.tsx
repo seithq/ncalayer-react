@@ -2,6 +2,10 @@ import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
+import Button from "./Fields/Button"
+import Label from "./Fields/Label"
+import Input from "./Fields/Input"
+import Spacer from "./Fields/Spacer"
 
 interface NotAfterProps {
   client: NCALayer
@@ -34,12 +38,10 @@ const NotAfter: React.FC<NotAfterProps> = ({ client, state, setState }) => {
 
   return (
     <div className="NotAfter">
-      <span>
-        Время исхода действия сертификата <strong>(getNotAfter)</strong>
-      </span>
-      <br />
-      <input type="text" readOnly value={state.notAfter} />
-      <button onClick={handleNotAfterClick}>Узнать</button>
+      <Label method="getNotAfter">Время исхода действия сертификата</Label>
+      <Input type="text" readOnly value={state.notAfter} />
+      <Spacer point="2" />
+      <Button onClick={handleNotAfterClick}>Узнать</Button>
     </div>
   )
 }

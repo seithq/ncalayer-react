@@ -3,6 +3,7 @@ import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
+import Button from "./Fields/Button"
 
 interface CMSSignatureFileProps {
   client: NCALayer
@@ -84,12 +85,12 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
       <input type="checkbox" onClick={handleCMSSignatureFromFileToggle} />{" "}
       Включить данные в подпись
       <br />
-      <button onClick={handleCMSSignatureFromFileChoose}>
+      <Button onClick={handleCMSSignatureFromFileChoose}>
         Выбрать файл для подписания
-      </button>
-      <button onClick={handleCMSSignatureFromFileClick}>
+      </Button>
+      <Button onClick={handleCMSSignatureFromFileClick}>
         Подпиcать данные
-      </button>
+      </Button>
       <br />
       <span>
         Проверить подписанные данные{" "}
@@ -102,9 +103,9 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
         message={state.cmsFileSignatureMessage}
       />
       <br />
-      <button onClick={handleCMSSignatureFromFileVerify}>
+      <Button onClick={handleCMSSignatureFromFileVerify}>
         Проверить данные
-      </button>
+      </Button>
     </div>
   )
 }

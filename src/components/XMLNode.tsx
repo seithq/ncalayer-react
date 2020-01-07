@@ -3,6 +3,8 @@ import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
+import Button from "./Fields/Button"
+import XMLCode from "./Fields/XMLCode"
 
 interface XMLNodeProps {
   client: NCALayer
@@ -117,13 +119,13 @@ const XMLNode: React.FC<XMLNodeProps> = ({ client, state, setState }) => {
       <label htmlFor="parent">Верхний элемент для подписи:</label>
       <input type="text" id="parent" onChange={handleXmlNodeParentChange} />
       <br />
-      <button onClick={handleXmlNodeClick}>Подпиcать данные</button>
+      <Button onClick={handleXmlNodeClick}>Подпиcать данные</Button>
       <br />
       <span>
         Проверить подписанный XML <strong>(verifyXml(String elemId))</strong>
       </span>
       <br />
-      <textarea readOnly value={state.xmlNodeSigned} />
+      <XMLCode data={state.xmlNodeSigned} />
       <SignatureCheck
         verified={state.xmlNodeValid}
         message={state.xmlNodeMessage}
@@ -143,7 +145,7 @@ const XMLNode: React.FC<XMLNodeProps> = ({ client, state, setState }) => {
         onChange={handleXmlNodeVerifyParentChange}
       />
       <br />
-      <button onClick={handleXmlNodeVerify}>Проверить данные</button>
+      <Button onClick={handleXmlNodeVerify}>Проверить данные</Button>
     </div>
   )
 }

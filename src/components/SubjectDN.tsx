@@ -2,6 +2,10 @@ import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
+import Button from "./Fields/Button"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
+import Input from "./Fields/Input"
 
 interface SubjectDNProps {
   client: NCALayer
@@ -34,12 +38,10 @@ const SubjectDN: React.FC<SubjectDNProps> = ({ client, state, setState }) => {
 
   return (
     <div className="SubjectDN">
-      <span>
-        Данные субъекта <strong>(getSubjectDN)</strong>
-      </span>
-      <br />
-      <textarea readOnly value={state.subjectDN} />
-      <button onClick={handleSubjectDNClick}>Узнать</button>
+      <Label method="getSubjectDN">Данные субъекта</Label>
+      <Input readOnly value={state.subjectDN} />
+      <Spacer point="2" />
+      <Button onClick={handleSubjectDNClick}>Узнать</Button>
     </div>
   )
 }

@@ -1,6 +1,24 @@
 import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
+import Button from "./Fields/Button"
+import Radio from "./Fields/Radio"
+import Label from "./Fields/Label"
+
+const options = [
+  {
+    value: "kk",
+    text: "Казахский",
+  },
+  {
+    value: "ru",
+    text: "Русский",
+  },
+  {
+    value: "en",
+    text: "Английский",
+  },
+]
 
 interface LocaleProps {
   client: NCALayer
@@ -9,10 +27,6 @@ interface LocaleProps {
 }
 
 const Locale: React.FC<LocaleProps> = ({ client, state, setState }) => {
-  const handleLangChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, lang: e.target.value })
-  }
-
   const handleLangClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -21,38 +35,22 @@ const Locale: React.FC<LocaleProps> = ({ client, state, setState }) => {
 
   return (
     <div className="Locale">
-      <span>
-        Установка языка <strong>(setLocale)</strong>
-      </span>
-      <br />
-      <input
-        type="radio"
-        name="lang"
-        value="kk"
-        onChange={handleLangChange}
-        checked={state.lang === "kk"}
-      />{" "}
-      Казахский
-      <br />
-      <input
-        type="radio"
-        name="lang"
-        value="ru"
-        onChange={handleLangChange}
-        checked={state.lang === "ru"}
-      />{" "}
-      Русский
-      <br />
-      <input
-        type="radio"
-        name="lang"
-        value="en"
-        onChange={handleLangChange}
-        checked={state.lang === "en"}
-      />{" "}
-      Английский
-      <br />
-      <button onClick={handleLangClick}>Сменить язык</button>
+      <Label method="setLocale">Тип ключа</Label>
+      <div className="flex flex-row mb-4">
+        {options.map(item => {
+          return (
+            <Radio
+              key={item.value}
+              text={item.text}
+              onChange={e => {
+                setState({ ...state, lang: item.value })
+              }}
+              active={state.lang === item.value}
+            />
+          )
+        })}
+      </div>
+      <Button onClick={handleLangClick}>Сменить язык</Button>
     </div>
   )
 }

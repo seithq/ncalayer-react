@@ -1,4 +1,6 @@
 import React from "react"
+import Label from "./Fields/Label"
+import Input from "./Fields/Input"
 
 interface StoragePathProps {
   path: string
@@ -7,9 +9,8 @@ interface StoragePathProps {
 const StoragePath: React.FC<StoragePathProps> = ({ path }) => {
   return (
     <div className="StoragePath">
-      <span>Путь хранилища ключа:</span>
-      <br />
-      <input type="text" readOnly value={path} />
+      <Label>Путь хранилища ключа</Label>
+      <Input type="text" readOnly value={path} />
     </div>
   )
 }

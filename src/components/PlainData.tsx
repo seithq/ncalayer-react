@@ -3,6 +3,7 @@ import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
+import Button from "./Fields/Button"
 
 interface PlainDataProps {
   client: NCALayer
@@ -71,7 +72,7 @@ const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
       </span>
       <br />
       <input type="text" onChange={handlePlainDataChange} />
-      <button onClick={handlePlainDataClick}>Подпиcать данные</button>
+      <Button onClick={handlePlainDataClick}>Подпиcать данные</Button>
       <br />
       <span>
         Проверить подписанные данные <strong>(verifyPlainData)</strong>
@@ -83,7 +84,7 @@ const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
         message={state.plainDataMessage}
       />
       <br />
-      <button onClick={handlePlainDataVerify}>Проверить данные</button>
+      <Button onClick={handlePlainDataVerify}>Проверить данные</Button>
     </div>
   )
 }

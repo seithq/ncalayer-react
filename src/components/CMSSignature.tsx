@@ -3,6 +3,7 @@ import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
+import Button from "./Fields/Button"
 
 interface CMSSignatureProps {
   client: NCALayer
@@ -81,7 +82,7 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
       <input type="checkbox" onClick={handleCMSSignatureToggle} /> Включить
       данные в подпись
       <br />
-      <button onClick={handleCMSSignatureClick}>Подпиcать данные</button>
+      <Button onClick={handleCMSSignatureClick}>Подпиcать данные</Button>
       <br />
       <span>
         Проверить подписанные данные <strong>(verifyCMSSignature)</strong>
@@ -93,7 +94,7 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
         message={state.cmsSignatureMessage}
       />
       <br />
-      <button onClick={handleCMSSignatureVerify}>Проверить данные</button>
+      <Button onClick={handleCMSSignatureVerify}>Проверить данные</Button>
     </div>
   )
 }

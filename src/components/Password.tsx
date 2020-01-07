@@ -1,5 +1,7 @@
 import React from "react"
 import AppState from "../state"
+import Label from "./Fields/Label"
+import Input from "./Fields/Input"
 
 interface PasswordProps {
   state: AppState
@@ -13,9 +15,8 @@ const Password: React.FC<PasswordProps> = ({ state, setState }) => {
 
   return (
     <div className="Password">
-      <span>Пароль для хранилища:</span>
-      <br />
-      <input type="password" onChange={handlePasswordChange} />
+      <Label>Пароль для хранилища</Label>
+      <Input type="password" onChange={handlePasswordChange} />
     </div>
   )
 }

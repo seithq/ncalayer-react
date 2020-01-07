@@ -3,6 +3,10 @@ import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import Radio from "./Fields/Radio"
+import Label from "./Fields/Label"
+import Button from "./Fields/Button"
+import Input from "./Fields/Input"
+import Spacer from "./Fields/Spacer"
 
 interface RDNSelectorProps {
   client: NCALayer
@@ -62,10 +66,6 @@ const RDNSelector: React.FC<RDNSelectorProps> = ({
   state,
   setState,
 }) => {
-  const handleOIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, oid: e.target.value })
-  }
-
   const handleRDNClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -92,24 +92,26 @@ const RDNSelector: React.FC<RDNSelectorProps> = ({
 
   return (
     <div className="RDN">
-      <span>
-        Получить значение RDN по OID <strong>(getRdnByOid)</strong>
-      </span>
-      <br />
-      {options.map(item => {
-        return (
-          <Radio
-            key={item.value}
-            name="oid"
-            value={item.value}
-            onChange={handleOIDChange}
-            checked={state.oid === item.value}
-            text={item.text}
-          />
-        )
-      })}
-      <input type="text" readOnly value={state.rdn} />
-      <button onClick={handleRDNClick}>Получить RDN по OID</button>
+      <Label method="getRdnByOid">Получить значение RDN по OID</Label>
+      <div className="flex flex-col mb-4">
+        {options.map(item => {
+          return (
+            <div key={item.value} className="mb-2 w-full">
+              <Radio
+                key={item.value}
+                text={item.text}
+                onChange={e => {
+                  setState({ ...state, oid: item.value })
+                }}
+                active={state.oid === item.value}
+              />
+            </div>
+          )
+        })}
+      </div>
+      <Input type="text" readOnly value={state.rdn} />
+      <Spacer point="4" />
+      <Button onClick={handleRDNClick}>Получить RDN по OID</Button>
     </div>
   )
 }

@@ -2,6 +2,10 @@ import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
+import Button from "./Fields/Button"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
+import Input from "./Fields/Input"
 
 interface IssuerDNProps {
   client: NCALayer
@@ -34,12 +38,10 @@ const IssuerDN: React.FC<IssuerDNProps> = ({ client, state, setState }) => {
 
   return (
     <div className="IssuerDN">
-      <span>
-        Данные Удостоверяющего центра <strong>(getIssuerDN)</strong>
-      </span>
-      <br />
-      <textarea readOnly value={state.issuerDN} />
-      <button onClick={handleIssuerDNClick}>Узнать</button>
+      <Label method="getIssuerDN">Данные Удостоверяющего центра</Label>
+      <Input readOnly value={state.issuerDN} />
+      <Spacer point="2" />
+      <Button onClick={handleIssuerDNClick}>Узнать</Button>
     </div>
   )
 }

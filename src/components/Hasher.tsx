@@ -1,6 +1,12 @@
 import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
+import PlainText from "./Fields/PlainText"
+import Label from "./Fields/Label"
+import Button from "./Fields/Button"
+import Select from "./Fields/Select"
+import Input from "./Fields/Input"
+import Spacer from "./Fields/Spacer"
 
 const options = [
   {
@@ -40,11 +46,10 @@ const Hasher: React.FC<HasherProps> = ({ client, state, setState }) => {
 
   return (
     <div className="Hasher">
-      <span>
-        Получить Хэш данных по указанному алгоритму <strong>(getHash)</strong>
-      </span>
-      <br />
-      <select onChange={handleAlgSelect} defaultValue={state.alg}>
+      <Label method="getHash">
+        Получить хэш данных по указанному алгоритму
+      </Label>
+      <Select onChange={handleAlgSelect} defaultValue={state.alg}>
         {options.map(item => {
           return (
             <option key={item.value} value={item.value}>
@@ -52,15 +57,13 @@ const Hasher: React.FC<HasherProps> = ({ client, state, setState }) => {
             </option>
           )
         })}
-      </select>
-      <br />
-      <span>Введите данные для хеширование:</span>
-      <br />
-      <input type="text" onChange={handleHashDataChange} />
-      <br />
-      <textarea readOnly value={state.hashed} />
-      <br />
-      <button onClick={handleHashClick}>Получить хэш</button>
+      </Select>
+      <Label>Введите данные для хеширование</Label>
+      <Input type="text" onChange={handleHashDataChange} />
+      <Spacer point="4" />
+      <PlainText data={state.hashed} />
+      <Spacer point="4" />
+      <Button onClick={handleHashClick}>Получить хэш</Button>
     </div>
   )
 }

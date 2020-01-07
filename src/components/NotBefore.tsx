@@ -2,6 +2,10 @@ import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
+import Button from "./Fields/Button"
+import Label from "./Fields/Label"
+import Input from "./Fields/Input"
+import Spacer from "./Fields/Spacer"
 
 interface NotBeforeProps {
   client: NCALayer
@@ -34,12 +38,10 @@ const NotBefore: React.FC<NotBeforeProps> = ({ client, state, setState }) => {
 
   return (
     <div className="NotBefore">
-      <span>
-        Время начала действия сертификата <strong>(getNotBefore)</strong>
-      </span>
-      <br />
-      <input type="text" readOnly value={state.notBefore} />
-      <button onClick={handleNotBeforeClick}>Узнать</button>
+      <Label method="getNotBefore">Время начала действия сертификата</Label>
+      <Input type="text" readOnly value={state.notBefore} />
+      <Spacer point="2" />
+      <Button onClick={handleNotBeforeClick}>Узнать</Button>
     </div>
   )
 }

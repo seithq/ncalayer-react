@@ -2,6 +2,10 @@ import React from "react"
 import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { extractKeyAlias, checkInputs } from "../helper"
+import Label from "./Fields/Label"
+import Button from "./Fields/Button"
+import Select from "./Fields/Select"
+import Spacer from "./Fields/Spacer"
 
 interface KeyListProps {
   client: NCALayer
@@ -37,9 +41,8 @@ const KeyList: React.FC<KeyListProps> = ({ client, state, setState }) => {
 
   return (
     <div className="KeyList">
-      <span>Список ключей:</span>
-      <br />
-      <select onChange={handleKeyAliasChange}>
+      <Label>Список ключей</Label>
+      <Select onChange={handleKeyAliasChange}>
         {state.keys.map((v, i) => {
           return (
             <option key={i} value={v}>
@@ -47,8 +50,9 @@ const KeyList: React.FC<KeyListProps> = ({ client, state, setState }) => {
             </option>
           )
         })}
-      </select>
-      <button onClick={handleKeyAliasClick}>Обновить список ключей</button>
+      </Select>
+      <Spacer point="4" />
+      <Button onClick={handleKeyAliasClick}>Обновить список ключей</Button>
     </div>
   )
 }

@@ -3,6 +3,8 @@ import AppState from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
+import Button from "./Fields/Button"
+import XMLCode from "./Fields/XMLCode"
 
 interface XMLProps {
   client: NCALayer
@@ -65,16 +67,16 @@ const XML: React.FC<XMLProps> = ({ client, state, setState }) => {
         defaultValue={state.xml}
         style={{ height: 100, width: 200 }}
       />
-      <button onClick={handleXmlClick}>Подпиcать данные</button>
+      <Button onClick={handleXmlClick}>Подпиcать данные</Button>
       <br />
       <span>
         Проверить подписанный XML <strong>(verifyXml)</strong>
       </span>
       <br />
-      <textarea readOnly value={state.xmlSigned} />
+      <XMLCode data={state.xmlSigned} />
       <SignatureCheck verified={state.xmlValid} message={state.xmlMessage} />
       <br />
-      <button onClick={handleXmlVerify}>Проверить данные</button>
+      <Button onClick={handleXmlVerify}>Проверить данные</Button>
     </div>
   )
 }

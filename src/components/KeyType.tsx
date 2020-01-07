@@ -1,11 +1,7 @@
 import React from "react"
 import AppState from "../state"
 import Radio from "./Fields/Radio"
-
-interface KeyTypeProps {
-  state: AppState
-  setState: React.Dispatch<React.SetStateAction<AppState>>
-}
+import Label from "./Fields/Label"
 
 const options = [
   {
@@ -22,27 +18,29 @@ const options = [
   },
 ]
 
-const KeyType: React.FC<KeyTypeProps> = ({ state, setState }) => {
-  const handleKeyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, keyType: e.target.value })
-  }
+interface KeyTypeProps {
+  state: AppState
+  setState: React.Dispatch<React.SetStateAction<AppState>>
+}
 
+const KeyType: React.FC<KeyTypeProps> = ({ state, setState }) => {
   return (
     <div className="KeyType">
-      <span>Тип ключа:</span>
-      <br />
-      {options.map(item => {
-        return (
-          <Radio
-            key={item.value}
-            name="keyType"
-            value={item.value}
-            onChange={handleKeyTypeChange}
-            checked={state.keyType === item.value}
-            text={item.text}
-          />
-        )
-      })}
+      <Label>Тип ключа</Label>
+      <div className="flex flex-row">
+        {options.map(item => {
+          return (
+            <Radio
+              key={item.value}
+              text={item.text}
+              onChange={e => {
+                setState({ ...state, keyType: item.value })
+              }}
+              active={state.keyType === item.value}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }
