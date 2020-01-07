@@ -3,7 +3,7 @@ import AppState, { initAppState } from "./state"
 import NCALayer, { MethodName } from "./ncalayer"
 import Response, { ValidationType } from "./response"
 import { isNullOrEmpty, extractKeyAlias } from "./helper"
-import Error from "./components/Error"
+import Layout from "./components/Layout"
 import Status from "./components/Status"
 import StorageAlias from "./components/StorageAlias"
 import StoragePath from "./components/StoragePath"
@@ -434,31 +434,29 @@ const App: React.FC = () => {
   // NCALayer client
   const client = new NCALayer(ws.current!)
 
-  if (!ready) {
-    return <Error />
-  }
-
   return (
     <div className="App">
-      <Status ready={ready} version={state.version} />
-      <StorageAlias client={client} state={state} setState={setState} />
-      <StoragePath path={state.path} />
-      <Password state={state} setState={setState} />
-      <KeyType state={state} setState={setState} />
-      <KeyList client={client} state={state} setState={setState} />
-      <Locale client={client} state={state} setState={setState} />
-      <NotBefore client={client} state={state} setState={setState} />
-      <NotAfter client={client} state={state} setState={setState} />
-      <SubjectDN client={client} state={state} setState={setState} />
-      <IssuerDN client={client} state={state} setState={setState} />
-      <RDNSelector client={client} state={state} setState={setState} />
-      <PlainData client={client} state={state} setState={setState} />
-      <CMSSignature client={client} state={state} setState={setState} />
-      <CMSSignatureFile client={client} state={state} setState={setState} />
-      <XML client={client} state={state} setState={setState} />
-      <XMLNode client={client} state={state} setState={setState} />
-      <Hasher client={client} state={state} setState={setState} />
-      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <Layout ready={ready}>
+        <Status ready={ready} version={state.version} />
+        <StorageAlias client={client} state={state} setState={setState} />
+        <StoragePath path={state.path} />
+        <Password state={state} setState={setState} />
+        <KeyType state={state} setState={setState} />
+        <KeyList client={client} state={state} setState={setState} />
+        <Locale client={client} state={state} setState={setState} />
+        <NotBefore client={client} state={state} setState={setState} />
+        <NotAfter client={client} state={state} setState={setState} />
+        <SubjectDN client={client} state={state} setState={setState} />
+        <IssuerDN client={client} state={state} setState={setState} />
+        <RDNSelector client={client} state={state} setState={setState} />
+        <PlainData client={client} state={state} setState={setState} />
+        <CMSSignature client={client} state={state} setState={setState} />
+        <CMSSignatureFile client={client} state={state} setState={setState} />
+        <XML client={client} state={state} setState={setState} />
+        <XMLNode client={client} state={state} setState={setState} />
+        <Hasher client={client} state={state} setState={setState} />
+        <pre>{JSON.stringify(state, null, 2)}</pre>
+      </Layout>
     </div>
   )
 }
