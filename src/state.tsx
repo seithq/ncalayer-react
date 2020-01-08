@@ -20,6 +20,12 @@ const defaultXMLByElementId = `<?xml version="1.0" encoding="utf-8"?>
                 </root>
 `
 
+export enum CheckState {
+  NotValidated = "notValidated",
+  Failed = "failede",
+  OK = "ok",
+}
+
 interface AppState {
   method: MethodName
   version: ""
@@ -39,24 +45,24 @@ interface AppState {
   // plain data
   plainData: string
   plainDataSigned: string
-  plainDataValid: boolean
+  plainDataValid: CheckState
   plainDataMessage: string
   // cms signature
   cmsSignature: string
   cmsSignatureFlag: boolean
   cmsSignatureSigned: string
-  cmsSignatureValid: boolean
+  cmsSignatureValid: CheckState
   cmsSignatureMessage: string
   // cms signature form file
   cmsFilePath: string
   cmsFileSignatureFlag: boolean
   cmsFileSignatureSigned: string
-  cmsFileSignatureValid: boolean
+  cmsFileSignatureValid: CheckState
   cmsFileSignatureMessage: string
   // xml
   xml: string
   xmlSigned: string
-  xmlValid: boolean
+  xmlValid: CheckState
   xmlMessage: string
   // xml by element id
   xmlNode: string
@@ -66,7 +72,7 @@ interface AppState {
   xmlNodeVerifyAttribute: string
   xmlNodeVerifyParent: string
   xmlNodeSigned: string
-  xmlNodeValid: boolean
+  xmlNodeValid: CheckState
   xmlNodeMessage: string
   // hash
   toHash: string
@@ -94,24 +100,24 @@ export const initAppState = (): AppState => {
     // plain data
     plainData: "",
     plainDataSigned: "",
-    plainDataValid: false,
+    plainDataValid: CheckState.NotValidated,
     plainDataMessage: "Не проверено",
     // cms signature
     cmsSignature: "",
     cmsSignatureFlag: false,
     cmsSignatureSigned: "",
-    cmsSignatureValid: false,
+    cmsSignatureValid: CheckState.NotValidated,
     cmsSignatureMessage: "Не проверено",
     // cms signature form file
     cmsFilePath: "",
     cmsFileSignatureFlag: false,
     cmsFileSignatureSigned: "",
-    cmsFileSignatureValid: false,
+    cmsFileSignatureValid: CheckState.NotValidated,
     cmsFileSignatureMessage: "Не проверено",
     // xml
     xml: defaultXML,
     xmlSigned: "",
-    xmlValid: false,
+    xmlValid: CheckState.NotValidated,
     xmlMessage: "Не проверено",
     // xml by element id
     xmlNode: defaultXMLByElementId,
@@ -121,7 +127,7 @@ export const initAppState = (): AppState => {
     xmlNodeVerifyAttribute: "",
     xmlNodeVerifyParent: "",
     xmlNodeSigned: "",
-    xmlNodeValid: false,
+    xmlNodeValid: CheckState.NotValidated,
     xmlNodeMessage: "Не проверено",
     // hash
     toHash: "",

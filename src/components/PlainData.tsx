@@ -1,9 +1,13 @@
 import React from "react"
-import AppState from "../state"
+import AppState, { CheckState } from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
+import Input from "./Fields/Input"
+import TextArea from "./Fields/TextArea"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
 
 interface PlainDataProps {
   client: NCALayer
@@ -28,7 +32,7 @@ const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
     if (ok) {
       setState({
         ...state,
-        plainDataValid: false,
+        plainDataValid: CheckState.NotValidated,
         plainDataMessage: "Не проверено",
         method: client.SignPlainData(
           state.alias,
@@ -67,24 +71,20 @@ const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
 
   return (
     <div className="PlainData">
-      <span>
-        Введите данные для подписи <strong>(signPlainData)</strong>
-      </span>
-      <br />
-      <input type="text" onChange={handlePlainDataChange} />
+      <Label method="signPlainData">Введите данные для подписи</Label>
+      <Input type="text" onChange={handlePlainDataChange} />
+      <Spacer point="4" />
       <Button onClick={handlePlainDataClick}>Подпиcать данные</Button>
-      <br />
-      <span>
-        Проверить подписанные данные <strong>(verifyPlainData)</strong>
-      </span>
-      <br />
-      <textarea readOnly value={state.plainDataSigned} />
-      <SignatureCheck
-        verified={state.plainDataValid}
-        message={state.plainDataMessage}
-      />
-      <br />
-      <Button onClick={handlePlainDataVerify}>Проверить данные</Button>
+      <Label method="verifyPlainData">Проверить подписанные данные</Label>
+      <TextArea readOnly value={state.plainDataSigned} />
+      <Spacer point="4" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handlePlainDataVerify}>Проверить данные</Button>
+        <SignatureCheck
+          checkState={state.plainDataValid}
+          message={state.plainDataMessage}
+        />
+      </div>
     </div>
   )
 }

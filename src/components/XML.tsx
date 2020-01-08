@@ -1,9 +1,12 @@
 import React from "react"
-import AppState from "../state"
+import AppState, { CheckState } from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
+import TextArea from "./Fields/TextArea"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
 import XMLCode from "./Fields/XMLCode"
 
 interface XMLProps {
@@ -29,7 +32,7 @@ const XML: React.FC<XMLProps> = ({ client, state, setState }) => {
     if (ok) {
       setState({
         ...state,
-        xmlValid: false,
+        xmlValid: CheckState.NotValidated,
         xmlMessage: "Не проверено",
         method: client.SignXml(
           state.alias,
@@ -58,25 +61,20 @@ const XML: React.FC<XMLProps> = ({ client, state, setState }) => {
 
   return (
     <div className="XML">
-      <span>
-        XML для подписи <strong>(signXML)</strong>
-      </span>
-      <br />
-      <textarea
-        onChange={handleXmlChange}
-        defaultValue={state.xml}
-        style={{ height: 100, width: 200 }}
-      />
+      <Label method="signXML">XML для подписи</Label>
+      <TextArea onChange={handleXmlChange} defaultValue={state.xml} />
+      <Spacer point="4" />
       <Button onClick={handleXmlClick}>Подпиcать данные</Button>
-      <br />
-      <span>
-        Проверить подписанный XML <strong>(verifyXml)</strong>
-      </span>
-      <br />
+      <Label method="verifyXml">Проверить подписанный XML</Label>
       <XMLCode data={state.xmlSigned} />
-      <SignatureCheck verified={state.xmlValid} message={state.xmlMessage} />
-      <br />
-      <Button onClick={handleXmlVerify}>Проверить данные</Button>
+      <Spacer point="4" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleXmlVerify}>Проверить данные</Button>
+        <SignatureCheck
+          checkState={state.xmlValid}
+          message={state.xmlMessage}
+        />
+      </div>
     </div>
   )
 }

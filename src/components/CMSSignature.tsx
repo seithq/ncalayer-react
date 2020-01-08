@@ -1,9 +1,14 @@
 import React from "react"
-import AppState from "../state"
+import AppState, { CheckState } from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
+import Input from "./Fields/Input"
+import TextArea from "./Fields/TextArea"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
+import CheckBox from "./Fields/CheckBox"
 
 interface CMSSignatureProps {
   client: NCALayer
@@ -38,7 +43,7 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
     if (ok) {
       setState({
         ...state,
-        cmsSignatureValid: false,
+        cmsSignatureValid: CheckState.NotValidated,
         cmsSignatureMessage: "Не проверено",
         method: client.CreateCMSSignature(
           state.alias,
@@ -74,27 +79,26 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
 
   return (
     <div className="CMSSignature">
-      <span>
-        Введите данные для подписи <strong>(createCMSSignature)</strong>
-      </span>
-      <br />
-      <input type="text" onChange={handleCMSSignatureChange} />
-      <input type="checkbox" onClick={handleCMSSignatureToggle} /> Включить
-      данные в подпись
-      <br />
-      <Button onClick={handleCMSSignatureClick}>Подпиcать данные</Button>
-      <br />
-      <span>
-        Проверить подписанные данные <strong>(verifyCMSSignature)</strong>
-      </span>
-      <br />
-      <textarea readOnly value={state.cmsSignatureSigned} />
-      <SignatureCheck
-        verified={state.cmsSignatureValid}
-        message={state.cmsSignatureMessage}
-      />
-      <br />
-      <Button onClick={handleCMSSignatureVerify}>Проверить данные</Button>
+      <Label method="createCMSSignature">Введите данные для подписи</Label>
+      <Input type="text" onChange={handleCMSSignatureChange} />
+      <Spacer point="4" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleCMSSignatureClick}>Подпиcать данные</Button>
+        <CheckBox
+          onClick={handleCMSSignatureToggle}
+          text="Включить данные в подпись"
+        />
+      </div>
+      <Label method="verifyCMSSignature">Проверить подписанные данные</Label>
+      <TextArea readOnly value={state.cmsSignatureSigned} />
+      <Spacer point="4" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleCMSSignatureVerify}>Проверить данные</Button>
+        <SignatureCheck
+          checkState={state.cmsSignatureValid}
+          message={state.cmsSignatureMessage}
+        />
+      </div>
     </div>
   )
 }

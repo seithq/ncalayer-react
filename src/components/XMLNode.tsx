@@ -1,9 +1,13 @@
 import React from "react"
-import AppState from "../state"
+import AppState, { CheckState } from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
+import Input from "./Fields/Input"
+import TextArea from "./Fields/TextArea"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
 import XMLCode from "./Fields/XMLCode"
 
 interface XMLNodeProps {
@@ -49,7 +53,7 @@ const XMLNode: React.FC<XMLNodeProps> = ({ client, state, setState }) => {
     if (ok) {
       setState({
         ...state,
-        xmlNodeValid: false,
+        xmlNodeValid: CheckState.NotValidated,
         xmlNodeMessage: "Не проверено",
         method: client.SignXmlByElementId(
           state.alias,
@@ -100,52 +104,37 @@ const XMLNode: React.FC<XMLNodeProps> = ({ client, state, setState }) => {
 
   return (
     <div className="XMLNode">
-      <span>
-        Подписать XML по идентификатору элемента <strong>(signXMLById)</strong>
-      </span>
-      <br />
-      <textarea
-        onChange={handleXmlNodeChange}
-        defaultValue={state.xmlNode}
-        style={{ height: 200, width: 400 }}
-      />
-      <br />
-      <label htmlFor="element">Подписываемый элемент XML:</label>
-      <input type="text" id="element" onChange={handleXmlNodeElementChange} />
-      <br />
-      <label htmlFor="attr">Имя атрибута идентификации элемента XML:</label>
-      <input type="text" id="attr" onChange={handleXmlNodeAttributeChange} />
-      <br />
-      <label htmlFor="parent">Верхний элемент для подписи:</label>
-      <input type="text" id="parent" onChange={handleXmlNodeParentChange} />
-      <br />
+      <Label method="signXMLById">
+        Подписать XML по идентификатору элемента
+      </Label>
+      <TextArea onChange={handleXmlNodeChange} defaultValue={state.xmlNode} />
+      <Spacer point="4" />
+      <Label>Подписываемый элемент XML</Label>
+      <Input type="text" onChange={handleXmlNodeElementChange} />
+      <Spacer point="2" />
+      <Label>Имя атрибута идентификации элемента XML</Label>
+      <Input type="text" onChange={handleXmlNodeAttributeChange} />
+      <Spacer point="2" />
+      <Label>Верхний элемент для подписи</Label>
+      <Input type="text" onChange={handleXmlNodeParentChange} />
+      <Spacer point="4" />
       <Button onClick={handleXmlNodeClick}>Подпиcать данные</Button>
-      <br />
-      <span>
-        Проверить подписанный XML <strong>(verifyXml(String elemId))</strong>
-      </span>
-      <br />
+      <Label method="verifyXml(elemId)">Проверить подписанный XML</Label>
       <XMLCode data={state.xmlNodeSigned} />
-      <SignatureCheck
-        verified={state.xmlNodeValid}
-        message={state.xmlNodeMessage}
-      />
-      <br />
-      <label htmlFor="v-attr">Имя атрибута идентификации элемента XML:</label>
-      <input
-        type="text"
-        id="v-attr"
-        onChange={handleXmlNodeVerifyAttributeChange}
-      />
-      <br />
-      <label htmlFor="v-parent">Верхний элемент для подписи:</label>
-      <input
-        type="text"
-        id="v-parent"
-        onChange={handleXmlNodeVerifyParentChange}
-      />
-      <br />
-      <Button onClick={handleXmlNodeVerify}>Проверить данные</Button>
+      <Spacer point="4" />
+      <Label>Имя атрибута идентификации элемента XML:</Label>
+      <Input type="text" onChange={handleXmlNodeVerifyAttributeChange} />
+      <Spacer point="2" />
+      <Label>Верхний элемент для подписи:</Label>
+      <Input type="text" onChange={handleXmlNodeVerifyParentChange} />
+      <Spacer point="4" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleXmlNodeVerify}>Проверить данные</Button>
+        <SignatureCheck
+          checkState={state.xmlNodeValid}
+          message={state.xmlNodeMessage}
+        />
+      </div>
     </div>
   )
 }

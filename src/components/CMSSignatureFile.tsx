@@ -1,9 +1,14 @@
 import React from "react"
-import AppState from "../state"
+import AppState, { CheckState } from "../state"
 import NCALayer from "../ncalayer"
 import { checkInputs } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
+import Input from "./Fields/Input"
+import TextArea from "./Fields/TextArea"
+import Label from "./Fields/Label"
+import Spacer from "./Fields/Spacer"
+import CheckBox from "./Fields/CheckBox"
 
 interface CMSSignatureFileProps {
   client: NCALayer
@@ -40,7 +45,7 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
     if (ok) {
       setState({
         ...state,
-        cmsFileSignatureValid: false,
+        cmsFileSignatureValid: CheckState.NotValidated,
         cmsFileSignatureMessage: "Не проверено",
         method: client.CreateCMSSignatureFromFile(
           state.alias,
@@ -76,36 +81,34 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
 
   return (
     <div className="CMSSignatureFile">
-      <span>
-        Введите путь к файлу для подписи{" "}
-        <strong>(createCMSSignatureFromFile)</strong>
-      </span>
-      <br />
-      <input type="text" readOnly value={state.cmsFilePath} />
-      <input type="checkbox" onClick={handleCMSSignatureFromFileToggle} />{" "}
-      Включить данные в подпись
-      <br />
-      <Button onClick={handleCMSSignatureFromFileChoose}>
-        Выбрать файл для подписания
-      </Button>
-      <Button onClick={handleCMSSignatureFromFileClick}>
-        Подпиcать данные
-      </Button>
-      <br />
-      <span>
-        Проверить подписанные данные{" "}
-        <strong>(verifyCMSSignatureFromFile)</strong>
-      </span>
-      <br />
-      <textarea readOnly value={state.cmsFileSignatureSigned} />
-      <SignatureCheck
-        verified={state.cmsFileSignatureValid}
-        message={state.cmsFileSignatureMessage}
-      />
-      <br />
-      <Button onClick={handleCMSSignatureFromFileVerify}>
-        Проверить данные
-      </Button>
+      <Label method="createCMSSignatureFromFile">
+        Путь к файлу для подписи
+      </Label>
+      <Input type="text" readOnly value={state.cmsFilePath} />
+      <Spacer point="4" />
+      <Button onClick={handleCMSSignatureFromFileChoose}>Выбрать файл</Button>
+      <Spacer point="2" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleCMSSignatureFromFileClick}>
+          Подпиcать данные
+        </Button>
+        <CheckBox
+          onClick={handleCMSSignatureFromFileToggle}
+          text="Включить данные в подпись"
+        />
+      </div>
+      <Label method="verifyCMSSignatureFromFile">Проверить данные</Label>
+      <TextArea readOnly value={state.cmsFileSignatureSigned} />
+      <Spacer point="4" />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleCMSSignatureFromFileVerify}>
+          Проверить данные
+        </Button>
+        <SignatureCheck
+          checkState={state.cmsFileSignatureValid}
+          message={state.cmsFileSignatureMessage}
+        />
+      </div>
     </div>
   )
 }

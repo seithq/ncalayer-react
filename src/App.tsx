@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
-import AppState, { initAppState } from "./state"
+import AppState, { initAppState, CheckState } from "./state"
 import NCALayer, { MethodName } from "./ncalayer"
 import Response, { ValidationType } from "./response"
 import { isNullOrEmpty, extractKeyAlias } from "./helper"
@@ -177,7 +177,7 @@ const App: React.FC = () => {
         if (!resp.GetResult()) {
           setState({
             ...state,
-            plainDataValid: false,
+            plainDataValid: CheckState.Failed,
             plainDataMessage: "Неправильная подпись",
           })
           return
@@ -185,7 +185,7 @@ const App: React.FC = () => {
 
         setState({
           ...state,
-          plainDataValid: true,
+          plainDataValid: CheckState.OK,
           plainDataMessage: "Валидная подпись",
         })
         return
@@ -212,7 +212,7 @@ const App: React.FC = () => {
         if (!resp.GetResult()) {
           setState({
             ...state,
-            cmsSignatureValid: false,
+            cmsSignatureValid: CheckState.Failed,
             cmsSignatureMessage: "Неправильная подпись",
           })
           return
@@ -220,7 +220,7 @@ const App: React.FC = () => {
 
         setState({
           ...state,
-          cmsSignatureValid: true,
+          cmsSignatureValid: CheckState.OK,
           cmsSignatureMessage: "Валидная подпись",
         })
         return
@@ -247,7 +247,7 @@ const App: React.FC = () => {
         if (!resp.GetResult()) {
           setState({
             ...state,
-            cmsFileSignatureValid: false,
+            cmsFileSignatureValid: CheckState.Failed,
             cmsFileSignatureMessage: "Неправильная подпись",
           })
           return
@@ -255,7 +255,7 @@ const App: React.FC = () => {
 
         setState({
           ...state,
-          cmsFileSignatureValid: true,
+          cmsFileSignatureValid: CheckState.OK,
           cmsFileSignatureMessage: "Валидная подпись",
         })
         return
@@ -282,7 +282,7 @@ const App: React.FC = () => {
         if (!resp.GetResult()) {
           setState({
             ...state,
-            xmlValid: false,
+            xmlValid: CheckState.Failed,
             xmlMessage: "Неправильная подпись",
           })
           return
@@ -290,7 +290,7 @@ const App: React.FC = () => {
 
         setState({
           ...state,
-          xmlValid: true,
+          xmlValid: CheckState.OK,
           xmlMessage: "Валидная подпись",
         })
         return
@@ -317,7 +317,7 @@ const App: React.FC = () => {
         if (!resp.GetResult()) {
           setState({
             ...state,
-            xmlNodeValid: false,
+            xmlNodeValid: CheckState.Failed,
             xmlNodeMessage: "Неправильная подпись",
           })
           return
@@ -325,7 +325,7 @@ const App: React.FC = () => {
 
         setState({
           ...state,
-          xmlNodeValid: true,
+          xmlNodeValid: CheckState.OK,
           xmlNodeMessage: "Валидная подпись",
         })
         return
