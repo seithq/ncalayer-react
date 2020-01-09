@@ -22,7 +22,7 @@ const defaultXMLByElementId = `<?xml version="1.0" encoding="utf-8"?>
 
 export enum CheckState {
   NotValidated = "notValidated",
-  Failed = "failede",
+  Failed = "failed",
   OK = "ok",
 }
 
