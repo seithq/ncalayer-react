@@ -1,23 +1,23 @@
 import { MethodName } from "./ncalayer"
 
 const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
-                <root>
-                    <name>Ivan</name>
-                    <iin>123456789012</iin>
-                </root>
+<root>
+  <name>Ivan</name>
+  <iin>123456789012</iin>
+</root>
 `
 
 const defaultXMLByElementId = `<?xml version="1.0" encoding="utf-8"?>
-                <root>
-                    <person id="personId">
-                        <name>Ivan</name>
-                        <iin>123456789012</iin>
-                    </person>
-                    <company id="companyId">
-                        <name>Company Name</name>
-                        <bin>123456789012</bin>
-                    </company>
-                </root>
+<root>
+    <person id="personId">
+      <name>Ivan</name>
+      <iin>123456789012</iin>
+    </person>
+    <company id="companyId">
+      <name>Company Name</name>
+      <bin>123456789012</bin>
+    </company>
+</root>
 `
 
 export enum CheckState {
