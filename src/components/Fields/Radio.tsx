@@ -1,16 +1,14 @@
 import React from "react"
 
 interface RadioProps {
-  key: string
   text: string
   active: boolean
   onChange: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }
 
-const Radio: React.FC<RadioProps> = ({ key, text, active, onChange }) => {
+const Radio: React.FC<RadioProps> = ({ text, active, onChange }) => {
   return (
     <div
-      key={key}
       className={
         `
         mr-2 px-4 py-2
