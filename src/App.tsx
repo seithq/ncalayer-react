@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import AppState, { initAppState, CheckState } from "./state"
 import NCALayer, { MethodName } from "./ncalayer"
+import Client from "./ncalayernew"
 import Response, { ValidationType } from "./response"
 import { isNullOrEmpty, extractKeyAlias } from "./helper"
 import Layout from "./components/Layout"
@@ -433,12 +434,13 @@ const App: React.FC = () => {
 
   // NCALayer client
   const client = new NCALayer(ws.current!)
+  const newclient = new Client(ws.current!)
 
   return (
     <div className="App">
       <Layout ready={ready} state={state}>
         <Box>
-          <StorageAlias client={client} state={state} setState={setState} />
+          <StorageAlias client={newclient} state={state} setState={setState} />
           <StoragePath path={state.path} />
           <Password state={state} setState={setState} />
           <KeyType state={state} setState={setState} />

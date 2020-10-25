@@ -1,12 +1,12 @@
 import React from "react"
 import AppState from "../state"
-import NCALayer from "../ncalayer"
+import Client, { Response } from "../ncalayernew"
 import { isNone } from "../helper"
 import Label from "./Fields/Label"
 import Select from "./Fields/Select"
 
 interface StorageAliasProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -21,7 +21,14 @@ const StorageAlias: React.FC<StorageAliasProps> = ({
       setState({
         ...state,
         alias: e.target.value,
-        method: client.BrowseKeyStore(e.target.value, "P12", state.path),
+        methodNew: client.browseKeyStore(
+          e.target.value,
+          "P12",
+          state.path,
+          (resp: Response) => {
+            setState({ ...state, path: resp.getResult() })
+          }
+        ),
       })
     }
   }
