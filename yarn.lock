@@ -1329,10 +1329,10 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@seithq/ncalayer@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@seithq/ncalayer/-/ncalayer-0.0.5.tgz#50fbf58ef3673a8a5855f049546b6e815fbe9a1b"
-  integrity sha512-Sa23/l+ToXaCjHyNfTBcOYnwJTcgPU0+g0o3Xutdajoo1hUhhk7+KiAks2QPnOLB/ql5iNwxjI4kW+lS4pbzoA==
+"@seithq/ncalayer@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@seithq/ncalayer/-/ncalayer-0.4.1.tgz#763a48c2fb41ae86c6153e330e604f9ba9f34c4e"
+  integrity sha512-yO2Y4FGW2FjncCTO/skCtsBmrO60X3hvgujEoHtvYUCaV6Fkn68+foteQBidqGJ6udQpKGPYEUs8F7XseYh/4g==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
