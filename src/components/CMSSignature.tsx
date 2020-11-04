@@ -1,7 +1,7 @@
 import React from "react"
 import AppState, { CheckState } from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
 import Input from "./Fields/Input"
@@ -11,7 +11,7 @@ import Spacer from "./Fields/Spacer"
 import CheckBox from "./Fields/CheckBox"
 
 interface CMSSignatureProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -41,19 +41,32 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        cmsSignatureValid: CheckState.NotValidated,
-        cmsSignatureMessage: "Не проверено",
-        method: client.CreateCMSSignature(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.cmsSignature,
-          state.cmsSignatureFlag
-        ),
-      })
+      client.createCMSSignature(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.cmsSignature,
+        state.cmsSignatureFlag,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              cmsSignatureSigned: resp.getResult(),
+              cmsSignatureValid: CheckState.NotValidated,
+              cmsSignatureMessage: "Не проверено",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 
@@ -67,13 +80,38 @@ const CMSSignature: React.FC<CMSSignatureProps> = ({
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.VerifyCMSSignature(
-          state.cmsSignatureSigned,
-          state.cmsSignature
-        ),
-      })
+      client.verifyCMSSignature(
+        state.cmsSignature,
+        state.cmsSignatureSigned,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            if (!resp.getResult()) {
+              setState({
+                ...state,
+                method: client.method,
+                cmsSignatureValid: CheckState.Failed,
+                cmsSignatureMessage: "Неправильная подпись",
+              })
+
+              return
+            }
+
+            setState({
+              ...state,
+              method: client.method,
+              cmsSignatureValid: CheckState.OK,
+              cmsSignatureMessage: "Валидная подпись",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 

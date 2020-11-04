@@ -1,7 +1,7 @@
 import React from "react"
 import AppState, { CheckState } from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
 import Input from "./Fields/Input"
@@ -11,7 +11,7 @@ import Spacer from "./Fields/Spacer"
 import XMLCode from "./Fields/XMLCode"
 
 interface XMLNodeProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -51,21 +51,34 @@ const XMLNode: React.FC<XMLNodeProps> = ({ client, state, setState }) => {
       attribute: state.xmlNodeAttribute,
     })
     if (ok) {
-      setState({
-        ...state,
-        xmlNodeValid: CheckState.NotValidated,
-        xmlNodeMessage: "Не проверено",
-        method: client.SignXmlByElementId(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.xmlNode,
-          state.xmlNodeElement,
-          state.xmlNodeAttribute,
-          state.xmlNodeParent
-        ),
-      })
+      client.signXmlByElementId(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.xmlNode,
+        state.xmlNodeElement,
+        state.xmlNodeAttribute,
+        state.xmlNodeParent,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              xmlNodeSigned: resp.getResult(),
+              xmlNodeValid: CheckState.NotValidated,
+              xmlNodeMessage: "Не проверено",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 
@@ -91,14 +104,41 @@ const XMLNode: React.FC<XMLNodeProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.VerifyXmlByElementId(
-          state.xmlNodeSigned,
-          state.xmlNodeVerifyAttribute,
-          state.xmlNodeVerifyParent
-        ),
-      })
+      client.verifyXmlByElementId(
+        state.xmlNodeSigned,
+        state.xmlNodeVerifyAttribute,
+        state.xmlNodeVerifyParent,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            if (!resp.getResult()) {
+              setState({
+                ...state,
+                method: client.method,
+                xmlNodeValid: CheckState.Failed,
+                xmlNodeMessage: "Неправильная подпись",
+              })
+
+              return
+            }
+
+            setState({
+              ...state,
+              method: client.method,
+              xmlNodeValid: CheckState.OK,
+              xmlNodeMessage: "Валидная подпись",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password &&
+              ValidationType.PasswordAttemps &&
+              ValidationType.Signature
+          )
+        }
+      )
     }
   }
 

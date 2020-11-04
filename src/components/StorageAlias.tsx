@@ -1,6 +1,6 @@
 import React from "react"
 import AppState from "../state"
-import Client, { Response } from "../ncalayernew"
+import Client, { Response } from "@seithq/ncalayer"
 import { isNone } from "../helper"
 import Label from "./Fields/Label"
 import Select from "./Fields/Select"
@@ -18,17 +18,17 @@ const StorageAlias: React.FC<StorageAliasProps> = ({
 }) => {
   const handleAliasChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (!isNone(e.target.value)) {
-      setState({
-        ...state,
-        alias: e.target.value,
-        methodNew: client.browseKeyStore(
-          e.target.value,
-          "P12",
-          state.path,
-          (resp: Response) => {
-            setState({ ...state, path: resp.getResult() })
-          }
-        ),
+      const alias = e.target.value
+
+      client.browseKeyStore(alias, "P12", state.path, (resp: Response) => {
+        if (resp.isOk()) {
+          setState({
+            ...state,
+            alias: alias,
+            method: client.method,
+            path: resp.getResult(),
+          })
+        }
       })
     }
   }

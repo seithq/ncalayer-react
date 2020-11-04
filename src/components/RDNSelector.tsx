@@ -1,7 +1,7 @@
 import React from "react"
 import AppState from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import Radio from "./Fields/Radio"
 import Label from "./Fields/Label"
 import Button from "./Fields/Button"
@@ -9,7 +9,7 @@ import Input from "./Fields/Input"
 import Spacer from "./Fields/Spacer"
 
 interface RDNSelectorProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -76,17 +76,27 @@ const RDNSelector: React.FC<RDNSelectorProps> = ({
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.GetRdnByOid(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.oid,
-          0
-        ),
-      })
+      client.getRdnByOid(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.oid,
+        0,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({ ...state, method: client.method, rdn: resp.getResult() })
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password &&
+              ValidationType.PasswordAttemps &&
+              ValidationType.RDN
+          )
+        }
+      )
     }
   }
 

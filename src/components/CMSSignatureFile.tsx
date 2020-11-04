@@ -1,7 +1,7 @@
 import React from "react"
 import AppState, { CheckState } from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
 import Input from "./Fields/Input"
@@ -11,7 +11,7 @@ import Spacer from "./Fields/Spacer"
 import CheckBox from "./Fields/CheckBox"
 
 interface CMSSignatureFileProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -24,7 +24,13 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
   const handleCMSSignatureFromFileChoose = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setState({ ...state, method: client.ShowFileChooser("ALL", "") })
+    client.showFileChooser("ALL", "", (resp: Response) => {
+      setState({
+        ...state,
+        method: client.method,
+        cmsFilePath: resp.getResult(),
+      })
+    })
   }
 
   const handleCMSSignatureFromFileToggle = (
@@ -43,19 +49,32 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        cmsFileSignatureValid: CheckState.NotValidated,
-        cmsFileSignatureMessage: "Не проверено",
-        method: client.CreateCMSSignatureFromFile(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.cmsFilePath,
-          state.cmsFileSignatureFlag
-        ),
-      })
+      client.createCMSSignatureFromFile(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.cmsFilePath,
+        state.cmsFileSignatureFlag,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              cmsFileSignatureSigned: resp.getResult(),
+              cmsFileSignatureValid: CheckState.NotValidated,
+              cmsFileSignatureMessage: "Не проверено",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 
@@ -69,13 +88,38 @@ const CMSSignatureFile: React.FC<CMSSignatureFileProps> = ({
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.VerifyCMSSignatureFromFile(
-          state.cmsFileSignatureSigned,
-          state.cmsFilePath
-        ),
-      })
+      client.verifyCMSSignatureFromFile(
+        state.cmsFilePath,
+        state.cmsFileSignatureSigned,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            if (!resp.getResult()) {
+              setState({
+                ...state,
+                method: client.method,
+                cmsFileSignatureValid: CheckState.Failed,
+                cmsFileSignatureMessage: "Неправильная подпись",
+              })
+
+              return
+            }
+
+            setState({
+              ...state,
+              method: client.method,
+              cmsFileSignatureValid: CheckState.OK,
+              cmsFileSignatureMessage: "Валидная подпись",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 

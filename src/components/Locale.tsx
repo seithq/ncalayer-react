@@ -1,6 +1,6 @@
 import React from "react"
 import AppState from "../state"
-import NCALayer from "../ncalayer"
+import Client, { Response } from "@seithq/ncalayer"
 import Button from "./Fields/Button"
 import Radio from "./Fields/Radio"
 import Label from "./Fields/Label"
@@ -21,7 +21,7 @@ const options = [
 ]
 
 interface LocaleProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -30,7 +30,9 @@ const Locale: React.FC<LocaleProps> = ({ client, state, setState }) => {
   const handleLangClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setState({ ...state, method: client.SetLocale(state.lang) })
+    client.setLocale(state.lang, (resp: Response) => {
+      setState({ ...state, method: client.method })
+    })
   }
 
   return (

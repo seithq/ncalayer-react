@@ -1,7 +1,7 @@
 import React from "react"
 import AppState, { CheckState } from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
 import Input from "./Fields/Input"
@@ -10,7 +10,7 @@ import Label from "./Fields/Label"
 import Spacer from "./Fields/Spacer"
 
 interface PlainDataProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -30,18 +30,31 @@ const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        plainDataValid: CheckState.NotValidated,
-        plainDataMessage: "Не проверено",
-        method: client.SignPlainData(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.plainData
-        ),
-      })
+      client.signPlainData(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.plainData,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              plainDataSigned: resp.getResult(),
+              plainDataValid: CheckState.NotValidated,
+              plainDataMessage: "Не проверено",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 
@@ -55,17 +68,42 @@ const PlainData: React.FC<PlainDataProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.VerifyPlainData(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.plainData,
-          state.plainDataSigned
-        ),
-      })
+      client.verifyPlainData(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.plainData,
+        state.plainDataSigned,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            if (!resp.getResult()) {
+              setState({
+                ...state,
+                method: client.method,
+                plainDataValid: CheckState.Failed,
+                plainDataMessage: "Неправильная подпись",
+              })
+
+              return
+            }
+
+            setState({
+              ...state,
+              method: client.method,
+              plainDataValid: CheckState.OK,
+              plainDataMessage: "Валидная подпись",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 

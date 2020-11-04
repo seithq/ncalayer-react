@@ -1,14 +1,14 @@
 import React from "react"
 import AppState from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import Button from "./Fields/Button"
 import Label from "./Fields/Label"
 import Spacer from "./Fields/Spacer"
 import Input from "./Fields/Input"
 
 interface SubjectDNProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -24,15 +24,28 @@ const SubjectDN: React.FC<SubjectDNProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.GetSubjectDN(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password
-        ),
-      })
+      client.getSubjectDN(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              subjectDN: resp.getResult(),
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 

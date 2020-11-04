@@ -1,6 +1,7 @@
 import React from "react"
 import AppState from "../state"
-import NCALayer from "../ncalayer"
+import Client, { Response } from "@seithq/ncalayer"
+import { ValidationType, handleError } from "../helper"
 import PlainText from "./Fields/PlainText"
 import Label from "./Fields/Label"
 import Button from "./Fields/Button"
@@ -24,7 +25,7 @@ const options = [
 ]
 
 interface HasherProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -41,7 +42,14 @@ const Hasher: React.FC<HasherProps> = ({ client, state, setState }) => {
   const handleHashClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setState({ ...state, method: client.GetHash(state.toHash, state.alg) })
+    client.getHash(state.toHash, state.alg, (resp: Response) => {
+      if (resp.isOk()) {
+        setState({ ...state, method: client.method, hashed: resp.getResult() })
+        return
+      }
+
+      handleError(resp, ValidationType.Common)
+    })
   }
 
   return (

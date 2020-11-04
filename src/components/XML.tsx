@@ -1,7 +1,7 @@
 import React from "react"
 import AppState, { CheckState } from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import SignatureCheck from "./Fields/SignatureCheck"
 import Button from "./Fields/Button"
 import TextArea from "./Fields/TextArea"
@@ -10,7 +10,7 @@ import Spacer from "./Fields/Spacer"
 import XMLCode from "./Fields/XMLCode"
 
 interface XMLProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -30,18 +30,31 @@ const XML: React.FC<XMLProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        xmlValid: CheckState.NotValidated,
-        xmlMessage: "Не проверено",
-        method: client.SignXml(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password,
-          state.xml
-        ),
-      })
+      client.signXml(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        state.xml,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              xmlSigned: resp.getResult(),
+              xmlValid: CheckState.NotValidated,
+              xmlMessage: "Не проверено",
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 
@@ -55,7 +68,34 @@ const XML: React.FC<XMLProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({ ...state, method: client.VerifyXml(state.xmlSigned) })
+      client.verifyXml(state.xmlSigned, (resp: Response) => {
+        if (resp.isOk()) {
+          if (!resp.getResult()) {
+            setState({
+              ...state,
+              method: client.method,
+              xmlValid: CheckState.Failed,
+              xmlMessage: "Неправильная подпись",
+            })
+
+            return
+          }
+
+          setState({
+            ...state,
+            method: client.method,
+            xmlValid: CheckState.OK,
+            xmlMessage: "Валидная подпись",
+          })
+
+          return
+        }
+
+        handleError(
+          resp,
+          ValidationType.Password && ValidationType.PasswordAttemps
+        )
+      })
     }
   }
 

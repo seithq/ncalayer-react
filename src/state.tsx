@@ -1,5 +1,4 @@
-import { MethodName } from "./ncalayer"
-import { Method } from "./ncalayernew"
+import { Method } from "@seithq/ncalayer"
 
 const defaultXML = `<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -28,8 +27,7 @@ export enum CheckState {
 }
 
 interface AppState {
-  method: MethodName
-  methodNew: Method
+  method: Method
   version: ""
   alias: string
   path: string
@@ -84,8 +82,7 @@ interface AppState {
 
 export const initAppState = (): AppState => {
   return {
-    method: MethodName.None,
-    methodNew: Method.None,
+    method: Method.None,
     version: "",
     alias: "NONE",
     path: "",

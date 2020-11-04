@@ -1,14 +1,14 @@
 import React from "react"
 import AppState from "../state"
-import NCALayer from "../ncalayer"
-import { checkInputs } from "../helper"
+import Client, { Response } from "@seithq/ncalayer"
+import { checkInputs, ValidationType, handleError } from "../helper"
 import Button from "./Fields/Button"
 import Label from "./Fields/Label"
 import Input from "./Fields/Input"
 import Spacer from "./Fields/Spacer"
 
 interface NotAfterProps {
-  client: NCALayer
+  client: Client
   state: AppState
   setState: React.Dispatch<React.SetStateAction<AppState>>
 }
@@ -24,15 +24,28 @@ const NotAfter: React.FC<NotAfterProps> = ({ client, state, setState }) => {
       keyAlias: state.keyAlias,
     })
     if (ok) {
-      setState({
-        ...state,
-        method: client.GetNotAfter(
-          state.alias,
-          state.path,
-          state.keyAlias,
-          state.password
-        ),
-      })
+      client.getNotAfter(
+        state.alias,
+        state.path,
+        state.keyAlias,
+        state.password,
+        (resp: Response) => {
+          if (resp.isOk()) {
+            setState({
+              ...state,
+              method: client.method,
+              notAfter: resp.getResult(),
+            })
+
+            return
+          }
+
+          handleError(
+            resp,
+            ValidationType.Password && ValidationType.PasswordAttemps
+          )
+        }
+      )
     }
   }
 
